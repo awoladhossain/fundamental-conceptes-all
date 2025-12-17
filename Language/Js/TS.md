@@ -406,7 +406,7 @@ Cheat:
 - void for functions that don't return a value.
 - never for functions that cannot complete normally.
 
-...existing code...
+
 
 ---
 
@@ -567,7 +567,7 @@ Cheat:
 - Use `type` for unions, intersections, and non-object aliases.
 - Prefer explicit object shapes and readonly where appropriate to avoid accidental mutations.
 
-...existing code...
+
 
 ---
 
@@ -693,7 +693,7 @@ Cheat summary:
 - Prefer discriminated unions (common literal key) for safe branching and exhaustive checks.
 - For arrays, (A | B)[] is different from A[] | B[] — choose based on intent.
 
-...existing code...
+
 
 ---
 
@@ -815,7 +815,7 @@ if (maybe) {
 - Type assertions are compile-time only — avoid them to mask real typing issues.
 - Non-null assertion (!) is handy but risky — prefer runtime checks or strict types if possible.
 
-...existing code...
+
 
 ---
 
@@ -925,7 +925,7 @@ console.log(createArray<string>(2, "x")); // ["x","x"]
 - Use keyof and discriminated unions to enable safe access and exhaustive checks.
 - Combine generics with interfaces/classes for reusable typed APIs.
 
-...existing code...
+
 
 ---
 
@@ -1108,7 +1108,7 @@ Quick extras:
 - Required<T> — all properties required.
 - ReturnType<T>, Parameters<T>, Exclude/Extract, NonNullable<T> are useful built-in utility types.
 
-...existing code...
+
 
 ---
 
@@ -1216,7 +1216,7 @@ Cheat summary:
 - Conditional types: T extends U ? X : Y; watch distribution over unions.
 - Mapped types: [K in keyof T] to transform shape; use `as` to remap names and conditional logic for selective transformations.
 
-...existing code...
+
 
 ---
 
@@ -1404,7 +1404,6 @@ Cheat summary:
 - Hybrid types = callable + properties (cast function and add props).
 - Class/method/property decorators = annotate and modify behavior at runtime (enable experimentalDecorators).
 
-...existing code...
 
 ---
 
@@ -1595,7 +1594,7 @@ Cheat-sheet:
 - Let TypeScript infer locally; annotate public exports.
 - Utility types: Exclude, Extract, NonNullable, ReturnType, InstanceType for flexible, safe transforms.
 
-...existing code...
+
 
 ---
 

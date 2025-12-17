@@ -146,8 +146,6 @@ console.log(Boolean("0"));// true
 console.log(typeof null); // "object"
 ```
 
-...existing code...
-
 ---
 
 ## Control Flow
@@ -273,8 +271,6 @@ Cheats:
 - Use for...of for arrays when you need values.
 - Use for...in for object keys (or array indices if intended).
 - Prefer clear loop exits and avoid mutating loop variable externally.
-
-...existing code...
 
 ---
 
@@ -427,8 +423,6 @@ Quick rules to remember:
 - let/const — declared in TDZ until evaluated; do not access before declaration.
 - Use let/const to write safer, clearer scope-aware code.
 
-...existing code...
-
 ---
 
 ## Objects
@@ -510,8 +504,6 @@ Memorize:
 - Use object literals for grouped state + behavior.
 - Dot access for known keys, bracket for dynamic keys.
 - Use regular methods when you need this to refer to the object; avoid arrow methods for that case.
-
-...existing code...
 
 ---
 
@@ -629,8 +621,6 @@ Notes:
 - reduce returns any value (depends on reducer).
 - spread/rest are shallow (object references preserved).
 
-...existing code...
-
 ---
 
 ## ES6+ Features
@@ -728,6 +718,52 @@ Cheat:
 - Use destructuring to simplify extraction and defaults.
 - Prefer named exports for utilities; default export for main module value.
 - Use dynamic import for lazy loading.
+
+---
+
+### JavaScript Function Methods: `call`, `apply`, and `bind`
+
+In JavaScript, functions are first-class objects, which means they can be passed around like any other object. This includes the ability to modify their behavior using various methods. Three important methods for manipulating function behavior are `call`, `apply`, and `bind`.
+
+## `call`
+
+The `call` method allows a function to be invoked with a specified `this` value and arguments provided as separate parameters.
+
+```javascript
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+}
+
+const user = { name: 'John' };
+
+greet.call(user, 'Alice'); // Output: Hello, Alice!
+```
+
+- The apply method is similar to call, but it allows arguments to be provided as an array instead of individual parameters.
+
+```javascript
+function sum(a, b) {
+  return a + b;
+}
+
+const numbers = [1, 2];
+
+console.log(sum.apply(null, numbers)); // Output: 3
+```
+
+- The bind method creates a new function that, when invoked, has its this value set to the provided value and any additional arguments pre-applied.
+
+```javascript
+function greet(name) {
+  console.log(`Hello, ${name}!`);
+}
+
+const user = { name: 'John' };
+
+const greetUser = greet.bind(user);
+
+greetUser('Alice'); // Output: Hello, John!
+```
 
 ---
 
