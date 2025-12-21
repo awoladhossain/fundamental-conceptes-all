@@ -74,6 +74,38 @@ Git tracks changes and enables collaboration.
     - A snapshot of the code is saved in the local repo with a commit ID/hash.
     - Commit with: `git commit -m "message"`
 
+**The 3 Types of Git Reset (Undo Last Commit):**
+
+1. **Soft Reset**:
+
+   - Removes the last commit but keeps changes staged (ready to recommit).
+   - Use: `git reset --soft HEAD~1`
+
+2. **Hard Reset**:
+
+   - Removes the last commit and discards changes.
+   - Use: `git reset --hard HEAD~1`
+
+3. **Mixed Reset** (Default):
+   - Removes the last commit but keeps changes unstaged (ready to recommit).
+   - Use: `git reset HEAD~1`
+
+**File Delete but wants to restore Case:**
+
+1. **Case 1: File was committed before deletion**
+   - If the file existed in a previous commit, you can restore it easily:
+   - Use: `git status`
+   - Use: `git restore <file>`
+   - This brings back the file exactly as it was in the last commit.
+2. **Case 2: File was deleted but not committed yet**
+   - If the file was deleted but not committed yet, you can restore it easily:
+   - Use: `git restore <filename>`
+   - This brings back the file exactly as it was in the last commit.
+3. **Case 3: File was deleted and already committed**
+   - If you committed the deletion but want the file back:
+   - Find the commit hash where the file still existed: Use: `git log -- <filename>`
+   - Restore it from that commit: Use: `git checkout <commit_hash> -- <filename>`
+   - Eaxmple:`git checkout abc123 -- index.html`
 
 **Configuration:**
 
