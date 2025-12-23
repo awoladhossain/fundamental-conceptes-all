@@ -60,3 +60,154 @@ SELECT * FROM Sales;
 ```sql
 SELECT product_name, unit_price FROM Products;
 ```
+
+3. Retrieve the sale_id and sale_date from the Sales table.
+
+```sql
+SELECT sale_id, sale_date FROM Sales;
+```
+
+4. Filter the Sales table to show only sales with a total_price greater than $100.
+
+```sql
+SELECT * FROM Sales WHERE total_price > 100;
+```
+
+5. Highest product price
+
+```sql
+select *
+from products
+where
+    unit_price = (
+        select max(unit_price)
+        from products
+    );
+```
+
+6. Lowest product price
+
+```sql
+select *
+from products
+where
+    unit_price = (
+        select min(unit_price)
+        from products
+    );
+```
+
+7. 2nd highest product price
+
+```sql
+select *
+from products
+where
+    unit_price = (
+        select max(unit_price)
+        from products
+        where
+            unit_price < (
+                select max(unit_price)
+                from products
+            )
+    );
+```
+
+8. Total Max price of Product
+
+```sql
+SELECT MAX(unit_price) FROM Products;
+```
+
+9.Filter the Products table to show only products in the 'Electronics' category.
+
+```sql
+SELECT * FROM Products WHERE category = 'Electronics';
+```
+
+10. Retrieve the sale_id and total_price from the Sales table for sales made on January 3, 2024.
+
+```sql
+SELECT sale_id, total_price
+FROM Sales
+WHERE sale_date = '2024-01-03';
+```
+
+11. Retrieve the product_id and product_name from the Products table for products with a unit_price greater than $100.
+
+```sql
+SELECT product_id, product_name
+FROM Products
+WHERE unit_price > 100;
+```
+
+12. Calculate the total revenue generated from all sales in the Sales table.
+
+```sql
+SELECT SUM(total_price) AS total_revenue
+FROM Sales;
+```
+
+13. Calculate the average unit_price of products in the Products table.
+
+```sql
+SELECT AVG(unit_price) AS average_unit_price
+FROM Products;
+```
+
+14. Calculate the total quantity_sold from the Sales table.
+
+```sql
+SELECT SUM(quantity_sold) AS total_quantity_sold
+FROM Sales;
+```
+
+15. Count Sales Per Day from the Sales table
+
+```sql
+SELECT sale_date, COUNT(*) AS sales_count
+FROM Sales
+GROUP BY sale_date
+ORDER BY sale_date;
+```
+
+16. Retrieve product_name and unit_price from the Products table with the Highest Unit Price
+
+```sql
+SELECT product_name, unit_price
+FROM Products
+ORDER BY unit_price DESC
+LIMIT 1;
+```
+
+17. Retrieve the sale_id, product_id, and total_price from the Sales table for sales with a quantity_sold greater than 4.
+
+```sql
+SELECT sale_id, product_id, total_price
+FROM Sales
+WHERE quantity_sold > 4;
+```
+
+18.  Retrieve the product_name and unit_price from the Products table, ordering the results by unit_price in descending order.
+
+```sql
+SELECT product_name, unit_price
+FROM Products
+ORDER BY unit_price DESC;
+```
+
+19. Retrieve the total_price of all sales, rounding the values to two decimal places.
+
+```sql
+SELECT ROUND(SUM(total_price), 2) AS total_sales
+FROM Sales;
+```
+
+20. Calculate the average total_price of sales in the Sales table.
+
+```sql
+SELECT AVG(total_price) AS average_total_price
+FROM Sales
+```
+
