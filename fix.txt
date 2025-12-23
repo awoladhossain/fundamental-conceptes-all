@@ -7,9 +7,8 @@ one more bug detected and fixed.
 fourth bug fixed.
 
 fifth bug fixed here.
-
-2026 is comming.
+2026 is comming.with evm
 
 we add more content
 with the developer sub-net
-where i can add more bug to fix with 
+where i can add more bug to fix with
