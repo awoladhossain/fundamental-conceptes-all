@@ -1,1 +1,3 @@
-i am fix file which is used to fix the bug
+i am fix file which is used to fix the bug.
+
+we fixed another bug.
