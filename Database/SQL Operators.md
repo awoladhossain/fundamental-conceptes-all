@@ -1,10 +1,14 @@
-# SQL Operators" refers to the fundamental symbols and keywords within the SQL that enable users to perform various operations. Operators let you build complex query condition
+# SQL Operators
 
-## Arithmetic Operators
+SQL Operators are fundamental symbols and keywords that allow you to perform various operations in SQL queries. They help build complex conditions, perform calculations, and filter data effectively.
+
+---
+
+## 📐 Arithmetic Operators
 
 **Used for mathematical calculations.**
 
-```bash
+```sql
 SELECT Salary, Bonus, Salary + Bonus AS TotalIncome
 FROM Employees;
 ```
@@ -17,18 +21,19 @@ FROM Employees;
 SELECT * FROM Students
 WHERE age >= 18;
 ```
+- ✅ Explanation: Returns all students aged 18 or older.
 
 ## Logical Operators
 
 **Used to combine conditions.**
 
-> AND → Both conditions must be true
-> OR → At least one condition true
-> NOT → Negates condition
-> IN → Matches any value in a list
-> BETWEEN → Within a range
-> LIKE → Pattern matching (with % or \_)
-> IS NULL → Checks for NULL values
+- AND → Both conditions must be true
+- OR → At least one condition true
+- NOT → Negates condition
+- IN → Matches any value in a list
+- BETWEEN → Within a range
+- LIKE → Pattern matching (with % or \_)
+- IS NULL → Checks for NULL values
 
 ```bash
 SELECT * FROM Students
@@ -54,6 +59,24 @@ SET Salary += 5000
 WHERE EmpID = 1;
 ```
 
+```sql
+-- Find first 3 users whose name starts with 'A'
+SELECT * FROM Users
+WHERE name LIKE 'A%'
+LIMIT 3;
+
+-- Get top 5 highest paid employees
+SELECT * FROM Employees
+ORDER BY Salary DESC
+LIMIT 5;
+```
+
+- ✅ Explanation:
+
+> First query finds up to 3 users whose names start with "A".
+
+> Second query returns the top 5 employees with the highest salaries.
+
 ## 🔎 Interview-Style Questions & Answers
 
 - Q: Difference between WHERE age = NULL and WHERE age IS NULL?
@@ -70,3 +93,4 @@ WHERE EmpID = 1;
 
 - Q: When would you use bitwise operators in SQL?
   > A: For flag-based columns (e.g., permissions stored as bits).
+
