@@ -1131,6 +1131,51 @@ async function parallel() {
 }
 parallel();
 ```
+### Higher-Order Function
+
+- A higher-order function is a function that either:
+ > Takes another function as an argument, or
+ > Returns a function as its result.
+
+**Example 1: Function as Argument**
+```js
+function greet(name) {
+  return "Hello, " + name;
+}
+
+function processUserInput(callback) {
+  const name = "Awolad";
+  return callback(name);
+}
+
+console.log(processUserInput(greet));
+// Output: Hello, Awolad
+```
+- ✅ Explanation: processUserInput is a higher-order function because it takes another function (greet) as input.
+
+**Example 2: Function Returning Function**
+```js
+function multiplier(factor) {
+  return function(number) {
+    return number * factor;
+  };
+}
+
+const double = multiplier(2);
+console.log(double(5)); // Output: 10
+```
+- ✅ Explanation: multiplier is a higher-order function because it returns another function.
+
+**Array methods like map, filter, reduce are higher-order functions:**
+```js
+const numbers = [1, 2, 3, 4];
+
+const doubled = numbers.map(num => num * 2);
+// [2, 4, 6, 8]
+
+const evens = numbers.filter(num => num % 2 === 0);
+// [2, 4]
+```
 
 ### Error handling in async code
 
