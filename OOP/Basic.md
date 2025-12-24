@@ -163,11 +163,22 @@ class Bird implements Flyable {
 
 ### 9. Abstract Classes vs Interfaces
 
-| Feature              | Abstract Class                    | Interface                                                        |
-| -------------------- | --------------------------------- | ---------------------------------------------------------------- |
-| Methods              | Can have both abstract & concrete | Only abstract (Java 7), default/static methods allowed (Java 8+) |
-| Multiple Inheritance | ❌ No                             | ✅ Yes (via multiple interfaces)                                 |
-| Variables            | Can have instance variables       | Only constants (static final)                                    |
+## Abstract Classes(partial blueprint + shared code) vs Interfaces(contract, no code, multiple allowed)
+
+### Methods
+
+- **Abstract Classes**: Can have both abstract and concrete methods.
+- **Interfaces**: Only allow abstract methods (Java 7), or can have default/static methods (Java 8+).
+
+### Inheritance
+
+- **Abstract Classes**: A class can extend only one abstract class (single inheritance).Useful when subclasses share common behavior.
+- **Interfaces**: Can be implemented by multiple classes.
+
+### Variables
+
+- **Abstract Classes**: Can declare instance variables (fields).Can have variables with any access modifier (private, protected, public).Variables can hold state of the object.
+- **Interfaces**: Can only have constants (static final).
 
 ### 10. Method Overloading
 
