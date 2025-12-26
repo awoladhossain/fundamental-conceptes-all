@@ -2589,3 +2589,5 @@ loadRemote('https://cdn.example.com/cart/remote.js');
 ```
 
 Tips: share runtime libs carefully (avoid duplicate React), establish contracts (props, lifecycle), isolate styles.
+
+---
