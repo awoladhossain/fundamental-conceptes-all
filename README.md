@@ -1,4 +1,4 @@
-# 📚 All Learning – Open Source Learning Resources Repository
+# 📚 Fundamental Concepts All – Open Source Learning Resources Repository
 
 Welcome to **All Learning** 🚀  
 A comprehensive, community-driven **open-source repository** that contains everything I’m learning, practicing, and sharing across **Computer Science**, **System Design**, **AI/ML**, and **Modern Development Frameworks**.
