@@ -1,6 +1,6 @@
 # 📚 Fundamental Concepts All – Open Source Learning Resources Repository
 
-Welcome to **All Learning Fundamental Concept** 🚀  
+Welcome to **All Learning Fundamental Concept_** 🚀  
 A comprehensive, community-driven **open-source repository** that contains everything I’m learning, practicing, and sharing across **Computer Science**, **System Design**, **AI/ML**, and **Modern Development Frameworks**.
 
 This repository is built with one goal in mind:
