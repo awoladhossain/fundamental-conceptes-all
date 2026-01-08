@@ -11,7 +11,7 @@ This repository is built with one goal in mind:
 
 ## 🎯 Goals of This Repository
 
-- ✅ Help **students & developers** crack **technical interviews**
+- ✅ Help **students & developers** crack **technical interviews***
 - ✅ Create a **one-stop learning hub** for CS + System Design + AI/ML
 - ✅ Share **clear explanations**, **code examples**, and **mental models**
 - ✅ Encourage **open-source collaboration**
