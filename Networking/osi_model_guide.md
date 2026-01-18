@@ -10,13 +10,13 @@ The **OSI (Open Systems Interconnection)** model is a conceptual framework that 
 
 | Layer | Name | Mnemonic | What it Does |
 |-------|------|----------|--------------|
-| 7 | Application | **Please** | User interfaces & applications |
-| 6 | Presentation | **Do** | Data formatting & encryption |
-| 5 | Session | **Not** | Manages connections |
+| 7 | Application | **Away** | User interfaces & applications |
+| 6 | Presentation | **Pizza** | Data formatting & encryption |
+| 5 | Session | **Sausage** | Manages connections |
 | 4 | Transport | **Throw** | Reliable data delivery |
-| 3 | Network | **Sausage** | Routing & addressing |
-| 2 | Data Link | **Pizza** | Physical addressing (MAC) |
-| 1 | Physical | **Away** | Cables, signals, bits |
+| 3 | Network | **Not** | Routing & addressing |
+| 2 | Data Link | **Do** | Physical addressing (MAC) |
+| 1 | Physical | **Please** | Cables, signals, bits |
 
 ---
 
@@ -897,7 +897,7 @@ OSI Model (7 Layers)          TCP/IP Model (4 Layers)
 └─────────────────────┘       └─────────────────────┘
 ```
 
-**OSI**: Theoretical model (how it should work)  
+**OSI**: Theoretical model (how it should work)
 **TCP/IP**: Practical model (how it actually works)
 
 ---
