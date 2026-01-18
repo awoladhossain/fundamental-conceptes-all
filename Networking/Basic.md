@@ -8,6 +8,8 @@ The OSI (Open Systems Interconnection) model and the TCP/IP (Transmission Contro
 
 The OSI model is a conceptual framework that divides network communication into seven layers. Each layer has a specific role and interacts with the layer above and below it. Here are the layers of the OSI model:
 
+#### Please Do Not Throw Swage Pizza Away
+
 #### Physical Layer
 
 The physical layer is responsible for transmitting raw data bits over a physical medium, such as cables or wireless signals. It defines the physical specifications of the network, including data encoding, error detection, and media access control.
