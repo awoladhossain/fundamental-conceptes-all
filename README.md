@@ -1,6 +1,6 @@
-# 📚 All Learning – Open Source Learning Resources Repository
+# 📚 Fundamental Concepts All – Open Source Learning Resources Repository
 
-Welcome to **All Learning** 🚀  
+Welcome to **All Learning Fundamental Concept** 🚀  
 A comprehensive, community-driven **open-source repository** that contains everything I’m learning, practicing, and sharing across **Computer Science**, **System Design**, **AI/ML**, and **Modern Development Frameworks**.
 
 This repository is built with one goal in mind:
@@ -11,7 +11,7 @@ This repository is built with one goal in mind:
 
 ## 🎯 Goals of This Repository
 
-- ✅ Help **students & developers** crack **technical interviews**
+- ✅ Help **students & developers** crack **technical interviews***
 - ✅ Create a **one-stop learning hub** for CS + System Design + AI/ML
 - ✅ Share **clear explanations**, **code examples**, and **mental models**
 - ✅ Encourage **open-source collaboration**
