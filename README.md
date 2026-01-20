@@ -1,6 +1,6 @@
 # 📚 Fundamental Concepts All – Open Source Learning Resources Repository
 
-Welcome to **All Learning Fundamental Concept** 🚀  
+Welcome to **All Learning Fundamental Concept** 🚀
 A comprehensive, community-driven **open-source repository** that contains everything I’m learning, practicing, and sharing across **Computer Science**, **System Design**, **AI/ML**, and **Modern Development Frameworks**.
 
 This repository is built with one goal in mind:
@@ -68,8 +68,7 @@ This repository is built with one goal in mind:
 
 ## 🌟 Star This Repository
 
-If you find this helpful, please give it a ⭐  
-https://github.com/awoladhossain/All-learning
+If you find this helpful, please give it a ⭐
 
 ---
 
@@ -81,7 +80,7 @@ Licensed under the **MIT License**.
 
 ## 👨‍💻 Author
 
-**Awolad Hossain**  
-Last Updated: **December 2025**
+**Awolad Hossain**
+Last Updated: **January 2026**
 
 Happy Learning & Happy Coding! 🚀
