@@ -54,7 +54,7 @@ case <-time.After(5 * time.Second):
 func FetchData(url string) (string, error) {
     resultChan := make(chan string, 1)
     errChan := make(chan error, 1)
-    
+
     go func() {
         resp, err := http.Get(url)
         if err != nil {
@@ -62,11 +62,11 @@ func FetchData(url string) (string, error) {
             return
         }
         defer resp.Body.Close()
-        
+
         body, _ := ioutil.ReadAll(resp.Body)
         resultChan <- string(body)
     }()
-    
+
     select {
     case result := <-resultChan:
         return result, nil
@@ -98,17 +98,17 @@ func worker(id int, done <-chan struct{}) {
 
 func main() {
     done := make(chan struct{})
-    
+
     // Start 3 workers
     for i := 1; i <= 3; i++ {
         go worker(i, done)
     }
-    
+
     time.Sleep(5 * time.Second)
-    
+
     // Signal shutdown
     close(done)  // Unblocks all <-done operations
-    
+
     time.Sleep(1 * time.Second)
 }
 ```
@@ -158,7 +158,7 @@ func main() {
         square(generate(1, 2, 3, 4, 5)),
         func(n int) bool { return n%2 == 0 },
     )
-    
+
     for result := range pipeline {
         fmt.Println(result)  // 4, 16, 100
     }
@@ -172,7 +172,7 @@ func main() {
 func merge(channels ...<-chan int) <-chan int {
     var wg sync.WaitGroup
     out := make(chan int)
-    
+
     for _, ch := range channels {
         wg.Add(1)
         go func(ch <-chan int) {
@@ -182,12 +182,12 @@ func merge(channels ...<-chan int) <-chan int {
             }
         }(ch)
     }
-    
+
     go func() {
         wg.Wait()
         close(out)
     }()
-    
+
     return out
 }
 
@@ -218,7 +218,7 @@ func (b *Broadcaster) Register(ch chan string) {
 func (b *Broadcaster) Broadcast(message string) {
     b.mu.RLock()
     defer b.mu.RUnlock()
-    
+
     for _, client := range b.clients {
         select {
         case client <- message:
@@ -235,7 +235,7 @@ br := &Broadcaster{}
 for i := 0; i < 3; i++ {
     ch := make(chan string, 1)
     br.Register(ch)
-    
+
     go func(ch <-chan string) {
         for msg := range ch {
             fmt.Println(msg)
@@ -261,7 +261,7 @@ func NewRateLimiter(rps int) *RateLimiter {
         tokens: make(chan struct{}, rps),
         ticker: time.NewTicker(time.Second / time.Duration(rps)),
     }
-    
+
     // Fill tokens at fixed rate
     go func() {
         for range rl.ticker.C {
@@ -271,7 +271,7 @@ func NewRateLimiter(rps int) *RateLimiter {
             }
         }
     }()
-    
+
     return rl
 }
 
@@ -322,7 +322,7 @@ for i := 0; i < 10; i++ {
     go func(id int) {
         sem.Acquire()
         defer sem.Release()
-        
+
         fmt.Printf("Processing %d\n", id)
         time.Sleep(1 * time.Second)
     }(i)
@@ -352,11 +352,11 @@ func (b *Barrier) Wait() {
     b.mu.Lock()
     b.count--
     b.mu.Unlock()
-    
+
     if b.count == 0 {
         close(b.arrive)
     }
-    
+
     <-b.arrive
     close(b.depart)
 }
@@ -431,18 +431,18 @@ for i := 0; i < 1000; i++ {
 func main() {
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel()
-    
+
     // Create child contexts
     ctx1, _ := context.WithTimeout(ctx, 5*time.Second)
     ctx2, _ := context.WithDeadline(ctx, time.Now().Add(10*time.Second))
-    
+
     // Cancelling parent cancels all children
     go doWork(ctx1)
     go doWork(ctx2)
-    
+
     time.Sleep(3 * time.Second)
     cancel()  // Cancels ctx, ctx1, ctx2
-    
+
     time.Sleep(1 * time.Second)
 }
 
@@ -480,12 +480,12 @@ func main() {
         log.Fatal(err)
     }
     defer f.Close()
-    
+
     if err := pprof.StartCPUProfile(f); err != nil {
         log.Fatal(err)
     }
     defer pprof.StopCPUProfile()
-    
+
     // Your code here
     expensive()
 }
@@ -515,10 +515,10 @@ func main() {
         log.Fatal(err)
     }
     defer f.Close()
-    
+
     // Run your program
     allocateMemory()
-    
+
     // Get current memory stats
     runtime.GC()
     if err := pprof.WriteHeapProfile(f); err != nil {
@@ -549,7 +549,7 @@ func main() {
     go func() {
         log.Println(http.ListenAndServe("localhost:6060", nil))
     }()
-    
+
     // Your server code here
     http.HandleFunc("/", handler)
     http.ListenAndServe(":8080", nil)
@@ -642,7 +642,7 @@ var bufferPool = sync.Pool{
 func ProcessLarge(data string) {
     buf := bufferPool.Get().(*bytes.Buffer)
     defer bufferPool.Put(buf)
-    
+
     buf.Reset()
     buf.WriteString(data)
     // Use buffer
@@ -687,14 +687,14 @@ func (c *Cache) Get(key string, fn func() interface{}) interface{} {
         return val
     }
     c.mu.RUnlock()
-    
+
     // Compute value
     val := fn()
-    
+
     c.mu.Lock()
     c.items[key] = val
     c.mu.Unlock()
-    
+
     return val
 }
 ```
@@ -727,13 +727,13 @@ func TestSortIdempotent(t *testing.T) {
         arr := generateRandomArray(100)
         arr1 := make([]int, len(arr))
         copy(arr1, arr)
-        
+
         sort.Ints(arr1)
-        
+
         arr2 := make([]int, len(arr1))
         copy(arr2, arr1)
         sort.Ints(arr2)
-        
+
         if !equal(arr1, arr2) {
             t.Fatal("Sorting is not idempotent")
         }
@@ -747,7 +747,7 @@ import "github.com/leanovate/gopter/prop"
 
 func TestAdditionProperty(t *testing.T) {
     properties := gopter.NewProperties(nil)
-    
+
     properties.Property("addition is commutative",
         prop.ForAll(
             func(x, y int) bool {
@@ -756,7 +756,7 @@ func TestAdditionProperty(t *testing.T) {
             gen.Int(),
             gen.Int(),
         ))
-    
+
     if !properties.Run(gopter.DefaultTestParameters()) {
         t.Fail()
     }
@@ -773,7 +773,7 @@ func FuzzJSON(f *testing.F) {
     // Seed corpus
     f.Add(`{"name":"John","age":30}`)
     f.Add(`[]`)
-    
+
     f.Fuzz(func(t *testing.T, input string) {
         var data interface{}
         // This shouldn't panic for any input
@@ -788,14 +788,14 @@ func FuzzJSON(f *testing.F) {
 func FuzzHTTPServer(f *testing.F) {
     f.Add("GET", "/users")
     f.Add("POST", "/users")
-    
+
     f.Fuzz(func(t *testing.T, method, path string) {
         req := httptest.NewRequest(method, path, nil)
         w := httptest.NewRecorder()
-        
+
         // Server shouldn't panic on any request
         handler(w, req)
-        
+
         if w.Code < 200 || w.Code > 599 {
             t.Errorf("Invalid status code: %d", w.Code)
         }
@@ -835,14 +835,14 @@ func TestDatabaseIntegration(t *testing.T) {
     // Setup
     db := setupTestDatabase(t)
     defer db.Close()
-    
+
     // Test
     user := &User{Name: "John", Email: "john@example.com"}
     err := db.CreateUser(user)
     if err != nil {
         t.Fatalf("Failed to create user: %v", err)
     }
-    
+
     // Verify
     retrieved, _ := db.GetUserByEmail("john@example.com")
     if retrieved.Name != "John" {
@@ -855,7 +855,7 @@ func TestWithDocker(t *testing.T) {
     if testing.Short() {
         t.Skip("Skipping integration test")
     }
-    
+
     // Start Docker container
     // Connect to service
     // Run tests
@@ -917,7 +917,7 @@ func (s *UserServer) GetUser(ctx context.Context, req *user.GetUserRequest) (*us
     if err != nil {
         return nil, status.Errorf(codes.NotFound, "user not found")
     }
-    
+
     return &user.User{
         Id:    int32(u.ID),
         Name:  u.Name,
@@ -930,11 +930,11 @@ func (s *UserServer) CreateUser(ctx context.Context, req *user.CreateUserRequest
         Name:  req.Name,
         Email: req.Email,
     }
-    
+
     if err := s.db.CreateUser(u); err != nil {
         return nil, status.Errorf(codes.Internal, "failed to create user")
     }
-    
+
     return &user.User{
         Id:    int32(u.ID),
         Name:  u.Name,
@@ -947,7 +947,7 @@ func main() {
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
     }
-    
+
     s := grpc.NewServer(
         grpc.MaxConcurrentStreams(100),
         grpc.KeepaliveParams(keepalive.ServerParameters{
@@ -955,10 +955,10 @@ func main() {
             Timeout: 10 * time.Second,
         }),
     )
-    
+
     db := ConnectDatabase()
     user.RegisterUserServiceServer(s, &UserServer{db: db})
-    
+
     if err := s.Serve(lis); err != nil {
         log.Fatalf("failed to serve: %v", err)
     }
@@ -973,18 +973,18 @@ func main() {
         log.Fatalf("failed to connect: %v", err)
     }
     defer conn.Close()
-    
+
     client := user.NewUserServiceClient(conn)
-    
+
     // Get user
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
-    
+
     resp, err := client.GetUser(ctx, &user.GetUserRequest{Id: 1})
     if err != nil {
         log.Fatalf("failed to get user: %v", err)
     }
-    
+
     fmt.Printf("User: %s (%s)\n", resp.Name, resp.Email)
 }
 ```
@@ -1013,7 +1013,7 @@ func (sr *ServiceRegistry) Register(name, addr string, port int) error {
             Timeout:  "5s",
         },
     }
-    
+
     return sr.client.Agent().ServiceRegister(reg)
 }
 
@@ -1048,7 +1048,7 @@ type LoadBalancer struct {
 func (lb *LoadBalancer) RoundRobin() string {
     lb.mu.Lock()
     defer lb.mu.Unlock()
-    
+
     server := lb.servers[lb.current]
     lb.current = (lb.current + 1) % len(lb.servers)
     return server
@@ -1063,17 +1063,17 @@ type ServerStats struct {
 func (ss *ServerStats) LeastConnected(servers []string) string {
     ss.mu.Lock()
     defer ss.mu.Unlock()
-    
+
     min := math.MaxInt
     var selected string
-    
+
     for _, server := range servers {
         if ss.connections[server] < min {
             min = ss.connections[server]
             selected = server
         }
     }
-    
+
     ss.connections[selected]++
     return selected
 }
@@ -1103,7 +1103,7 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
     cb.mu.RLock()
     state := cb.state
     cb.mu.RUnlock()
-    
+
     // Circuit is open
     if state == "open" {
         if time.Since(cb.lastFailTime) > cb.timeout {
@@ -1114,23 +1114,23 @@ func (cb *CircuitBreaker) Call(fn func() error) error {
             return errors.New("circuit breaker is open")
         }
     }
-    
+
     // Try the operation
     err := fn()
-    
+
     cb.mu.Lock()
     defer cb.mu.Unlock()
-    
+
     if err != nil {
         cb.failCount++
         cb.lastFailTime = time.Now()
-        
+
         if cb.failCount >= cb.failThresh {
             cb.state = "open"
         }
         return err
     }
-    
+
     // Success: reset
     cb.failCount = 0
     cb.state = "closed"
@@ -1156,31 +1156,31 @@ type Retry struct {
 
 func (r *Retry) Do(fn func() error) error {
     var lastErr error
-    
+
     for attempt := 1; attempt <= r.MaxAttempts; attempt++ {
         err := fn()
         if err == nil {
             return nil
         }
-        
+
         lastErr = err
-        
+
         if attempt < r.MaxAttempts {
             delay := r.calculateBackoff(attempt)
             time.Sleep(delay)
         }
     }
-    
+
     return lastErr
 }
 
 func (r *Retry) calculateBackoff(attempt int) time.Duration {
     delay := r.BaseDelay * time.Duration(math.Pow(2, float64(attempt-1)))
-    
+
     if delay > r.MaxDelay {
         delay = r.MaxDelay
     }
-    
+
     // Add jitter to prevent thundering herd
     jitter := time.Duration(rand.Int63n(int64(delay / 10)))
     return delay + jitter
@@ -1279,25 +1279,25 @@ func (s *CreateOrderService) Execute(cmd CreateOrderCommand) error {
     if err != nil {
         return err
     }
-    
+
     // Business logic
     for _, itemID := range cmd.ItemIDs {
         item, _ := s.itemRepo.FindByID(itemID)
         order.AddItem(item)
     }
-    
+
     // Save aggregate
     if err := s.orderRepo.Save(order); err != nil {
         return err
     }
-    
+
     // Publish domain events
     s.eventBus.Publish(domain.OrderCreatedEvent{
         OrderID:  order.id,
         Total:    order.total,
         Time:     time.Now(),
     })
-    
+
     return nil
 }
 
@@ -1330,17 +1330,17 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    
+
     cmd := application.CreateOrderCommand{
         OrderID: domain.OrderID(req.OrderID),
         ItemIDs: req.ItemIDs,
     }
-    
+
     if err := h.createOrderService.Execute(cmd); err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(map[string]string{"status": "created"})
 }
@@ -1546,13 +1546,13 @@ type UserHandler struct {
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
     var req CreateUserRequest
     json.NewDecoder(r.Body).Decode(&req)
-    
+
     user, err := h.createUserUseCase.Execute(req.Name, req.Email)
     if err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
         return
     }
-    
+
     json.NewEncoder(w).Encode(user)
 }
 
@@ -1658,7 +1658,7 @@ type InMemoryEventStore struct {
 func (es *InMemoryEventStore) Append(events ...Event) error {
     es.mu.Lock()
     defer es.mu.Unlock()
-    
+
     for _, event := range events {
         id := event.AggregateID()
         es.events[id] = append(es.events[id], event)
@@ -1669,7 +1669,7 @@ func (es *InMemoryEventStore) Append(events ...Event) error {
 func (es *InMemoryEventStore) GetEvents(aggregateID string) ([]Event, error) {
     es.mu.RLock()
     defer es.mu.RUnlock()
-    
+
     return es.events[aggregateID], nil
 }
 
@@ -1687,7 +1687,7 @@ func (r *AccountRepository) FindByID(id string) (*Account, error) {
     if err != nil {
         return nil, err
     }
-    
+
     account := &Account{}
     for _, event := range events {
         account.ApplyEvent(event)
@@ -1724,13 +1724,13 @@ type CreateAccountCommandHandler struct {
 
 func (h *CreateAccountCommandHandler) Handle(cmd *CreateAccountCommand) error {
     account := &domain.Account{}
-    
+
     event := domain.AccountCreatedEvent{
         id:        cmd.ID,
         owner:     cmd.Owner,
         timestamp: time.Now(),
     }
-    
+
     account.ApplyEvent(event)
     return h.repo.Append(event)
 }
@@ -1758,7 +1758,7 @@ type AccountProjection struct {
 func (p *AccountProjection) Handle(query *GetAccountQuery) (*AccountView, error) {
     p.mu.RLock()
     defer p.mu.RUnlock()
-    
+
     view, ok := p.accounts[query.ID]
     if !ok {
         return nil, errors.New("account not found")
@@ -1774,7 +1774,7 @@ type AccountProjectionUpdater struct {
 func (u *AccountProjectionUpdater) OnAccountCreated(event domain.AccountCreatedEvent) {
     u.projection.mu.Lock()
     defer u.projection.mu.Unlock()
-    
+
     u.projection.accounts[event.AggregateID()] = AccountView{
         ID:      event.AggregateID(),
         Owner:   event.owner,
@@ -1785,7 +1785,7 @@ func (u *AccountProjectionUpdater) OnAccountCreated(event domain.AccountCreatedE
 func (u *AccountProjectionUpdater) OnMoneyDeposited(event domain.MoneyDepositedEvent) {
     u.projection.mu.Lock()
     defer u.projection.mu.Unlock()
-    
+
     view := u.projection.accounts[event.AggregateID()]
     view.Balance = view.Balance.Add(event.amount)
     u.projection.accounts[event.AggregateID()] = view
@@ -1812,29 +1812,29 @@ func (s *PaymentSaga) Start(order Order, payment Payment) error {
     s.state = "started"
     s.orderID = order.ID
     s.mu.Unlock()
-    
+
     // Step 1: Process payment
     if err := s.processPayment(payment); err != nil {
         return s.compensatePayment()
     }
-    
+
     // Step 2: Reserve inventory
     if err := s.reserveInventory(order); err != nil {
         s.compensatePayment()
         return s.compensateInventory(order)
     }
-    
+
     // Step 3: Create shipment
     if err := s.createShipment(order); err != nil {
         s.compensatePayment()
         s.compensateInventory(order)
         return s.compensateShipment(order)
     }
-    
+
     s.mu.Lock()
     s.state = "completed"
     s.mu.Unlock()
-    
+
     return nil
 }
 
@@ -1873,7 +1873,7 @@ func (s *OrderService) CreateOrder(order Order) error {
     if err := s.saveOrder(order); err != nil {
         return err
     }
-    
+
     // Publish event - others listen and act
     return s.eventBus.Publish(OrderCreatedEvent{OrderID: order.ID})
 }
@@ -1965,22 +1965,22 @@ func NewTracedUserService(tracer trace.Tracer, repo UserRepository) *TracedUserS
 func (us *TracedUserService) GetUser(ctx context.Context, userID string) (*User, error) {
     ctx, span := us.tracer.Start(ctx, "GetUser")
     defer span.End()
-    
+
     // Add attributes for debugging
     span.SetAttributes(
         attribute.String("user_id", userID),
     )
-    
+
     // Trace child operation
     ctx, dbSpan := us.tracer.Start(ctx, "FetchFromDatabase")
     user, err := us.repo.FindByID(ctx, userID)
     dbSpan.End()
-    
+
     if err != nil {
         span.RecordError(err)
         return nil, err
     }
-    
+
     return user, nil
 }
 
@@ -1989,11 +1989,11 @@ func InitTracing() {
     exporter, _ := jaeger.New(
         jaeger.WithAgentHost("localhost"),
     )
-    
+
     tp := tracesdk.NewTracerProvider(
         tracesdk.WithBatcher(exporter),
     )
-    
+
     otel.SetTracerProvider(tp)
 }
 ```
@@ -2037,7 +2037,7 @@ func MetricsMiddleware(mc *MetricsCollector, next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
         mc.activeRequests.Inc()
         defer mc.activeRequests.Dec()
-        
+
         start := time.Now()
         next.ServeHTTP(w, r)
         mc.RecordRequest(time.Since(start))
@@ -2052,7 +2052,7 @@ func main() {
         mc.requestLatency,
         mc.activeRequests,
     )
-    
+
     http.Handle("/metrics", promhttp.Handler())
     http.ListenAndServe(":8080", nil)
 }
@@ -2105,14 +2105,14 @@ func ErrorHandlerMiddleware(next http.Handler) http.Handler {
                 })
             }
         }()
-        
+
         next.ServeHTTP(w, r)
     })
 }
 
 func handleError(w http.ResponseWriter, appErr AppError) {
     w.Header().Set("Content-Type", "application/json")
-    
+
     statusCode := http.StatusInternalServerError
     switch appErr.Code {
     case ErrCodeValidation:
@@ -2122,7 +2122,7 @@ func handleError(w http.ResponseWriter, appErr AppError) {
     case ErrCodeUnauthorized:
         statusCode = http.StatusUnauthorized
     }
-    
+
     w.WriteHeader(statusCode)
     json.NewEncoder(w).Encode(map[string]interface{}{
         "code":    appErr.Code,
@@ -2134,12 +2134,12 @@ func handleError(w http.ResponseWriter, appErr AppError) {
 // Usage
 func GetUser(w http.ResponseWriter, r *http.Request) {
     userID := r.URL.Query().Get("id")
-    
+
     if userID == "" {
         handleError(w, NewValidationError("id", "required"))
         return
     }
-    
+
     user, err := userRepo.FindByID(userID)
     if err != nil {
         handleError(w, AppError{
@@ -2149,7 +2149,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
         })
         return
     }
-    
+
     if user == nil {
         handleError(w, AppError{
             Code:    ErrCodeNotFound,
@@ -2158,7 +2158,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
         })
         return
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(user)
 }
@@ -2182,42 +2182,42 @@ func (app *App) Start(addr string) error {
         WriteTimeout: 15 * time.Second,
         IdleTimeout:  60 * time.Second,
     }
-    
+
     // Start server in goroutine
     go func() {
         if err := app.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
             app.logger.Fatalf("Server error: %v", err)
         }
     }()
-    
+
     app.logger.Infof("Server started on %s", addr)
-    
+
     // Wait for shutdown signal
     <-app.shutdownCh
     app.logger.Info("Shutdown signal received")
-    
+
     return app.Shutdown()
 }
 
 func (app *App) Shutdown() error {
     app.logger.Info("Starting graceful shutdown")
-    
+
     // Create shutdown context with timeout
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
-    
+
     // Stop accepting new requests
     if err := app.server.Shutdown(ctx); err != nil {
         app.logger.Errorf("Server shutdown error: %v", err)
         return err
     }
-    
+
     // Close database
     if err := app.db.Close(); err != nil {
         app.logger.Errorf("Database close error: %v", err)
         return err
     }
-    
+
     app.logger.Info("Graceful shutdown completed")
     return nil
 }
@@ -2229,16 +2229,16 @@ func (app *App) NotifyShutdown(sig os.Signal) {
 // Usage
 func main() {
     app := NewApp()
-    
+
     // Handle signals
     sigChan := make(chan os.Signal, 1)
     signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-    
+
     go func() {
         sig := <-sigChan
         app.NotifyShutdown(sig)
     }()
-    
+
     if err := app.Start(":8080"); err != nil {
         log.Fatalf("Application error: %v", err)
     }
@@ -2275,14 +2275,14 @@ func (hc *HealthChecker) CheckReadiness(ctx context.Context) (map[string]bool, e
     hc.mu.RLock()
     checks := hc.checks
     hc.mu.RUnlock()
-    
+
     results := make(map[string]bool)
-    
+
     for name, check := range checks {
         err := check(ctx)
         results[name] = err == nil
     }
-    
+
     return results, nil
 }
 
@@ -2298,7 +2298,7 @@ func (hc *HealthChecker) LivenessHandler(w http.ResponseWriter, r *http.Request)
 
 func (hc *HealthChecker) ReadinessHandler(w http.ResponseWriter, r *http.Request) {
     results, _ := hc.CheckReadiness(r.Context())
-    
+
     ready := true
     for _, ok := range results {
         if !ok {
@@ -2306,31 +2306,31 @@ func (hc *HealthChecker) ReadinessHandler(w http.ResponseWriter, r *http.Request
             break
         }
     }
-    
+
     w.Header().Set("Content-Type", "application/json")
-    
+
     if ready {
         w.WriteHeader(http.StatusOK)
     } else {
         w.WriteHeader(http.StatusServiceUnavailable)
     }
-    
+
     json.NewEncoder(w).Encode(results)
 }
 
 // Usage
 func main() {
     hc := NewHealthChecker()
-    
+
     // Register checks
     hc.Register("database", func(ctx context.Context) error {
         return db.Ping(ctx)
     })
-    
+
     hc.Register("redis", func(ctx context.Context) error {
         return redisClient.Ping(ctx).Err()
     })
-    
+
     http.HandleFunc("/live", hc.LivenessHandler)
     http.HandleFunc("/ready", hc.ReadinessHandler)
 }
@@ -2369,14 +2369,14 @@ type App struct {
 func NewApp() *App {
     logger := logrus.New()
     logger.SetFormatter(&logrus.JSONFormatter{})
-    
+
     db, _ := sql.Open("postgres", "...")
-    
+
     metrics := NewMetricsCollector()
-    
+
     hc := NewHealthChecker()
     hc.Register("database", db.Ping)
-    
+
     return &App{
         logger:        logger,
         db:            db,
@@ -2388,37 +2388,37 @@ func NewApp() *App {
 
 func (app *App) setupRoutes() http.Handler {
     router := http.NewServeMux()
-    
+
     // Setup middleware chain
     var handler http.Handler = router
     handler = MetricsMiddleware(app.metrics, handler)
     handler = ErrorHandlerMiddleware(handler)
     handler = LoggingMiddleware(app.logger, handler)
-    
+
     // Routes
     router.HandleFunc("/api/users", app.handleCreateUser)
     router.HandleFunc("/live", app.healthChecker.LivenessHandler)
     router.HandleFunc("/ready", app.healthChecker.ReadinessHandler)
     router.Handle("/metrics", promhttp.Handler())
-    
+
     return handler
 }
 
 func (app *App) handleCreateUser(w http.ResponseWriter, r *http.Request) {
     ctx, span := otel.Tracer("app").Start(r.Context(), "CreateUser")
     defer span.End()
-    
+
     var req CreateUserRequest
     if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
         handleError(w, NewValidationError("body", err.Error()))
         return
     }
-    
+
     user := &User{
         Name:  req.Name,
         Email: req.Email,
     }
-    
+
     if err := app.createUser(ctx, user); err != nil {
         app.logger.WithError(err).Error("Failed to create user")
         handleError(w, AppError{
@@ -2428,12 +2428,12 @@ func (app *App) handleCreateUser(w http.ResponseWriter, r *http.Request) {
         })
         return
     }
-    
+
     app.logger.WithFields(logrus.Fields{
         "user_id": user.ID,
         "email":   user.Email,
     }).Info("User created")
-    
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(user)
@@ -2446,11 +2446,11 @@ func (app *App) createUser(ctx context.Context, user *User) error {
         BaseDelay:   100 * time.Millisecond,
         MaxDelay:    10 * time.Second,
     }
-    
+
     return retry.Do(func() error {
         ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
         defer cancel()
-        
+
         result, err := app.db.ExecContext(
             ctx,
             "INSERT INTO users (name, email) VALUES ($1, $2)",
@@ -2460,7 +2460,7 @@ func (app *App) createUser(ctx context.Context, user *User) error {
         if err != nil {
             return err
         }
-        
+
         id, _ := result.LastInsertId()
         user.ID = int(id)
         return nil
@@ -2474,58 +2474,44 @@ func (app *App) Start(addr string) error {
         ReadTimeout:  15 * time.Second,
         WriteTimeout: 15 * time.Second,
     }
-    
+
     go func() {
         if err := app.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
             app.logger.Fatalf("Server error: %v", err)
         }
     }()
-    
+
     app.logger.Infof("Server started on %s", addr)
-    
+
     <-app.shutdownCh
     return app.Shutdown()
 }
 
 func (app *App) Shutdown() error {
     app.logger.Info("Starting graceful shutdown")
-    
+
     ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
     defer cancel()
-    
+
     if err := app.server.Shutdown(ctx); err != nil {
         return err
     }
-    
+
     return app.db.Close()
 }
 
 func main() {
     app := NewApp()
-    
+
     sigChan := make(chan os.Signal, 1)
     signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-    
+
     go func() {
         app.shutdownCh <- <-sigChan
     }()
-    
+
     if err := app.Start(":8080"); err != nil {
         log.Fatalf("Application error: %v", err)
     }
 }
 ```
-
----
-
-## SUMMARY: Path to Senior Backend Engineer
-
-1. **Master concurrency** - This is Go's superpower
-2. **Profile and optimize** - Measure before optimizing
-3. **Test thoroughly** - Property-based and integration tests
-4. **Build microservices** - gRPC, service mesh patterns
-5. **Design architecturally** - DDD, SOLID, clean architecture
-6. **Use advanced patterns** - Event sourcing, CQRS, sagas
-7. **Operate in production** - Logging, tracing, monitoring, error handling
-
-Remember: **Premature optimization is the root of all evil**. Always profile first, then optimize based on real data.
