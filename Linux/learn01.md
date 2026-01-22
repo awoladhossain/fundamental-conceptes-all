@@ -262,3 +262,114 @@ ls
 ***Common Mistakes to Avoid***
 1. Forgetting you can't undo rm (lost files forever)
 2. Not checking pwd before rm -r (deleting wrong directory!)
+
+### Create a practice workspace
+
+```bash
+cd ~
+mkdir -p shell-practice/backups
+cd shell-practice
+pwd
+```
+***What This Does***
+- Create a practice directory with a backups subdirectory. We'll use this safe space to practice file manipulation without risking real files.New shell-practice directory with backups folder inside. pwd confirms you're in ~/shell-practice
+
+**Pro Tips**
+1. Always practice destructive commands in a test directory first
+2. Use meaningful directory names for organization
+
+**Common Mistakes to Avoid**
+- Practicing file operations in important directories (risk of data loss)
+
+### Create empty files with touch
+
+```bash
+touch readme.txt
+
+touch app.js config.json data.csv
+
+ls -l
+```
+
+**What This Does**
+- touch creates empty files if they don't exist. Can create multiple files in one command (space-separated). If file exists, touch updates its modification time without changing content.Four empty files created: readme.txt, app.js, config.json, data.csv. ls -l shows size 0 for all.
+
+**Pro Tips**
+1. touch is fastest way to create empty files
+2. Can create multiple files: touch file1 file2 file3
+3. If file exists, only updates timestamp (won't overwrite)
+4. Use .txt, .md, .json extensions to indicate file type
+
+**Common Mistakes to Avoid**
+- Expecting touch to add content (it only creates empty files)
+- Not using file extensions (makes files harder to identify later)
+
+### Copy files with cp
+
+```bash
+cp readme.txt readme-backup.txt
+
+cp app.js app-v1.js
+
+ls -l
+```
+
+***What This Does***
+- cp copies files. Syntax: cp `source` `destination`. Creates exact duplicate with new name. Original file remains unchanged. Useful for backups before editing.Two new files created: readme-backup.txt (copy of readme.txt) and app-v1.js (copy of app.js). ls shows all 6 files.
+
+
+**Pro Tips**
+1. Syntax: cp <source> <destination>
+2. Make backups before editing: cp file.txt file.txt.backup
+3. cp doesn't delete the original (unlike mv)
+4. Add -i flag for confirmation: cp -i (asks before overwriting)
+
+
+**Common Mistakes to Avoid**
+- Reversing source and destination (cp new old instead of cp old new)
+- Overwriting important files without -i flag
+
+### Copy files to different directory
+
+```bash
+cp readme.txt backups/
+
+cp config.json data.csv backups/
+
+ls backups/
+```
+
+***What This Does***
+- cp can copy to different directories. When destination is a directory, file keeps same name. Can copy multiple files to one directory in single command.backups/ now contains: readme.txt, config.json, data.csv. Original files still in shell-practice/.
+
+**Pro Tips**
+1. Trailing / on directory not required but makes intent clear
+2. Copy multiple files: cp file1 file2 file3 destination/
+3. Last argument is always the destination
+4. Use -v flag to see what's being copied: cp -v file dest/
+
+
+**Common Mistakes to Avoid**
+1. Forgetting destination directory must exist (create with mkdir first)
+2. Trying to copy multiple sources with a filename destination
+
+### Copy directories recursively
+
+```bash
+mkdir project
+
+touch project/index.html project/style.css
+
+cp -r project project-backup
+
+ls -R
+```
+
+**What This Does**
+cp -r copies directories recursively (directory + all contents). -r flag is required for directories. Creates complete duplicate of directory tree.project-backup directory created with exact copy of index.html and style.css. ls -R shows both directories with identical contents.
+
+**Pro Tips**
+1. MUST use -r flag to copy directories
+2. -r means 'recursive' (includes all subdirectories)
+3. Copies entire directory tree, not just top level
+4. Use -a instead of -r to preserve timestamps and permissions
