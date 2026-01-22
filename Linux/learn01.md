@@ -366,7 +366,7 @@ ls -R
 ```
 
 **What This Does**
-cp -r copies directories recursively (directory + all contents). -r flag is required for directories. Creates complete duplicate of directory tree.project-backup directory created with exact copy of index.html and style.css. ls -R shows both directories with identical contents.
+- cp -r copies directories recursively (directory + all contents). -r flag is required for directories. Creates complete duplicate of directory tree.project-backup directory created with exact copy of index.html and style.css. ls -R shows both directories with identical contents.
 
 **Pro Tips**
 1. MUST use -r flag to copy directories
@@ -448,7 +448,7 @@ ls backups/
 ```
 
 **What This Does**
-rm permanently deletes files. NO TRASH/RECYCLE BIN. No undo. Can delete multiple files in one command. Use with extreme caution.data.csv deleted from shell-practice/. readme.txt and config.json deleted from backups/. Files gone forever.
+- rm permanently deletes files. NO TRASH/RECYCLE BIN. No undo. Can delete multiple files in one command. Use with extreme caution.data.csv deleted from shell-practice/. readme.txt and config.json deleted from backups/. Files gone forever.
 
 **Pro Tips**
 1. rm is PERMANENT - no undo, no recovery
@@ -460,7 +460,7 @@ rm permanently deletes files. NO TRASH/RECYCLE BIN. No undo. Can delete multiple
 
 **Common Mistakes to Avoid**
 - Deleting files without -i flag (no confirmation)
-- Using rm * without understanding what * matches (deletes everything!)
+- Using rm `* without understanding what * matches` (deletes everything!)
 - Expecting to recover deleted files (they're gone forever)
 - Not checking pwd before rm (deleting from wrong directory)
 
@@ -480,15 +480,15 @@ ls
 ```
 
 **What This Does**
-- * matches any characters. *.txt matches all .txt files. test* matches anything starting with 'test'. Wildcards expand before command runs. Powerful but dangerous with rm.ls *.txt shows all .txt files. ls test* shows test1, test2, test3. rm test*.txt deletes test1.txt and test2.txt. demo.txt and test3.log remain.
+- `* matches any characters. *.txt matches all .txt files. test* `matches anything starting with 'test'. Wildcards expand before command runs. Powerful but dangerous with rm.ls `*.txt shows all .txt files. ls test* `shows test1, test2, test3. rm test*.txt deletes test1.txt and test2.txt. demo.txt and test3.log remain.
 
 **Pro Tips**
-1. * matches zero or more characters
+1. `* matches` zero or more characters
 2. ? matches exactly one character
-3. *.txt matches all text files
+3. `*.txt` matches all text files
 4. test* matches test1, test2, testing, etc.
 5. ALWAYS test with ls before using with rm!
-6. Double-check: ls *.txt then rm *.txt
+6. Double-check: ls `*.txt then rm *.txt`
 
 
 **Common Mistakes to Avoid**
