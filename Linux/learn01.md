@@ -432,3 +432,34 @@ ls backups/
 **Common Mistakes to Avoid**
 - Last argument not being a directory (error when moving multiple files)
 - Moving important files without checking destination first
+
+### Delete files with rm
+
+```bash
+ls
+
+rm data.csv
+
+ls
+
+rm backups/readme.txt backups/config.json
+
+ls backups/
+```
+
+**What This Does**
+rm permanently deletes files. NO TRASH/RECYCLE BIN. No undo. Can delete multiple files in one command. Use with extreme caution.data.csv deleted from shell-practice/. readme.txt and config.json deleted from backups/. Files gone forever.
+
+**Pro Tips**
+1. rm is PERMANENT - no undo, no recovery
+2. Use -i flag for confirmation: rm -i file (asks before deleting)
+3. Can delete multiple files: rm file1 file2 file3
+4. Check pwd before rm to ensure you're in correct directory
+5. Consider using trash-cli instead of rm for safety
+
+
+**Common Mistakes to Avoid**
+- Deleting files without -i flag (no confirmation)
+- Using rm * without understanding what * matches (deletes everything!)
+- Expecting to recover deleted files (they're gone forever)
+- Not checking pwd before rm (deleting from wrong directory)
