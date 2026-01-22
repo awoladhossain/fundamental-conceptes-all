@@ -406,3 +406,29 @@ ls project/
 - Expecting mv to create a copy (it moves, not copies)
 - Accidentally overwriting existing files without -i flag
 - Not realizing mv can rename (thinking it only moves)
+
+
+### Move multiple files
+
+```bash
+ls
+
+mv app.js app-v1.js config.json backups/
+
+ls
+
+ls backups/
+```
+
+***What This Does***
+- mv can move multiple files to one directory in single command. Last argument is destination (must be existing directory). All other arguments are source files.app.js, app-v1.js, and config.json moved to backups/. No longer in shell-practice/. backups/ now has 6 files total.
+
+**Pro Tips**
+1. Last argument is always the destination
+2. Destination must be a directory when moving multiple files
+3. Use -v flag to see what's being moved: mv -v file1 file2 dest/
+4. Faster than multiple mv commands
+
+**Common Mistakes to Avoid**
+- Last argument not being a directory (error when moving multiple files)
+- Moving important files without checking destination first
