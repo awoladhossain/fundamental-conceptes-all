@@ -373,3 +373,36 @@ cp -r copies directories recursively (directory + all contents). -r flag is requ
 2. -r means 'recursive' (includes all subdirectories)
 3. Copies entire directory tree, not just top level
 4. Use -a instead of -r to preserve timestamps and permissions
+
+**Common Mistakes to Avoid**
+- Forgetting -r flag when copying directories (error: omitting directory)
+- Not understanding cp without -r only works for files
+
+
+### Move and rename files with mv
+
+```bash
+mv readme-backup.txt README.md
+
+ls -l
+
+mv README.md project/
+
+ls project/
+```
+
+***What This Does***
+- mv moves OR renames files. Same syntax as cp but original disappears. When destination is different directory, file moves. When same directory, file is renamed.readme-backup.txt renamed to README.md, then moved into project/. No longer in shell-practice/.
+
+**Pro Tips**
+1. mv both moves AND renames (depending on arguments)
+2. Same directory = rename: mv old.txt new.txt
+3. Different directory = move: mv file.txt other-dir/
+4. mv is instant (doesn't copy then delete)
+5. Use -i flag to prevent accidental overwrites: mv -i
+
+
+**Common Mistakes to Avoid**
+- Expecting mv to create a copy (it moves, not copies)
+- Accidentally overwriting existing files without -i flag
+- Not realizing mv can rename (thinking it only moves)
