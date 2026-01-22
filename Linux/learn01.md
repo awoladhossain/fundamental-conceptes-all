@@ -455,7 +455,7 @@ rm permanently deletes files. NO TRASH/RECYCLE BIN. No undo. Can delete multiple
 2. Use -i flag for confirmation: rm -i file (asks before deleting)
 3. Can delete multiple files: rm file1 file2 file3
 4. Check pwd before rm to ensure you're in correct directory
-5. Consider using trash-cli instead of rm for safety
+5. Consider using `trash-cli` instead of rm for safety
 
 
 **Common Mistakes to Avoid**
@@ -463,3 +463,35 @@ rm permanently deletes files. NO TRASH/RECYCLE BIN. No undo. Can delete multiple
 - Using rm * without understanding what * matches (deletes everything!)
 - Expecting to recover deleted files (they're gone forever)
 - Not checking pwd before rm (deleting from wrong directory)
+
+
+### Understand file wildcards
+
+```bash
+touch test1.txt test2.txt test3.log demo.txt
+
+ls *.txt
+
+ls test*
+
+rm test*.txt
+
+ls
+```
+
+**What This Does**
+- * matches any characters. *.txt matches all .txt files. test* matches anything starting with 'test'. Wildcards expand before command runs. Powerful but dangerous with rm.ls *.txt shows all .txt files. ls test* shows test1, test2, test3. rm test*.txt deletes test1.txt and test2.txt. demo.txt and test3.log remain.
+
+**Pro Tips**
+1. * matches zero or more characters
+2. ? matches exactly one character
+3. *.txt matches all text files
+4. test* matches test1, test2, testing, etc.
+5. ALWAYS test with ls before using with rm!
+6. Double-check: ls *.txt then rm *.txt
+
+
+**Common Mistakes to Avoid**
+- Using rm * without understanding what it matches (deletes everything!)
+- Not testing wildcard with ls before rm (accidental deletion)
+- Spaces around *: rm * .txt deletes ALL files plus errors on .txt
