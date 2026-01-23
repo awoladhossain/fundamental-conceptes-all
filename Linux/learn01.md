@@ -550,3 +550,31 @@ rm -r removes directory and all contents recursively. Use for directories. Alway
 **Common Mistakes to Avoid**
 - Using rm -rf habitually (forces deletion, no safety net)
 - Running rm -r in wrong directory (data loss)
+
+### Set up practice files with content
+
+```bash
+cd ~
+
+mkdir search-practice && cd search-practice
+
+echo 'Hello World' > hello.txt
+
+echo -e 'Line 1\nLine 2\nLine 3\nERROR: Something failed\nLine 5' > log.txt
+
+echo -e 'apple\nbanana\ncherry\ndate\nelderberry' > fruits.txt
+```
+
+***What This Does***
+echo writes text to files. > creates new file. -e enables escape sequences like \n (newline). We're creating test files with known content to practice viewing and searching.Three files created: hello.txt (1 line), log.txt (5 lines with ERROR), fruits.txt (5 lines of fruit names).
+
+
+**Pro Tips**
+1. echo writes to stdout (screen) by default
+2. `> redirects output to file (creates or overwrites)`
+3. `>> appends to file instead of overwriting`
+4. `-e flag interprets \n as newline`
+
+**Common Mistakes to Avoid**
+- Using > instead of >> and accidentally overwriting files
+- Forgetting quotes around text with spaces
