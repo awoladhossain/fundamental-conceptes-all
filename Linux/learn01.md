@@ -495,3 +495,33 @@ ls
 - Using rm * without understanding what it matches (deletes everything!)
 - Not testing wildcard with ls before rm (accidental deletion)
 - Spaces around *: rm * .txt deletes ALL files plus errors on .txt
+
+
+### Practice safe file operations
+
+
+```bash
+ls -li backups/
+
+cp -i backups/app.js backups/app-v1.js
+
+rm -i test3.log
+
+rm -i demo.txt
+```
+
+**What This Does**
+-i flag adds interactive mode (asks confirmation). Use with cp, mv, rm to prevent accidental overwrites/deletions. Respond y (yes) or n (no) to each prompt.cp -i prompts if app-v1.js exists. rm -i asks confirmation before deleting each file. Gives you chance to say no.
+
+**Pro Tips**
+1. Always use -i flag when learning: rm -i, cp -i, mv -i
+2. Create shell aliases: alias rm='rm -i'
+3. Test wildcards with ls before rm
+4. Keep backups of important files
+5. pwd before destructive operations
+6. There is NO undo in terminal
+
+**Common Mistakes to Avoid**
+- Getting comfortable and skipping -i flag
+- Pressing 'y' without reading the prompt
+- Assuming deleted files can be recovered (they can't)
