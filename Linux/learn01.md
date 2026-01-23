@@ -525,3 +525,28 @@ rm -i demo.txt
 - Getting comfortable and skipping -i flag
 - Pressing 'y' without reading the prompt
 - Assuming deleted files can be recovered (they can't)
+
+
+### Clean up practice workspace
+
+```bash
+cd ~
+
+rm -r shell-practice
+
+ls
+```
+
+**What This Does**
+rm -r removes directory and all contents recursively. Use for directories. Always pwd first to confirm location.shell-practice directory and everything inside deleted. Clean slate.
+
+**Pro Tips**
+1. rm -r deletes directories + contents
+2. rm -rf forces deletion without confirmation (VERY dangerous)
+3. Always check pwd before rm -r
+4. Consider keeping practice directories for future reference
+
+
+**Common Mistakes to Avoid**
+- Using rm -rf habitually (forces deletion, no safety net)
+- Running rm -r in wrong directory (data loss)
