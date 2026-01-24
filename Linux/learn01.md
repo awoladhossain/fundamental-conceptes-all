@@ -623,3 +623,26 @@ less log.txt
 **Common Mistakes to Avoid**
 - Not knowing how to exit (press q)
 - Using cat instead of less for large files
+
+### View beginning of files with head
+
+```bash
+head log.txt
+
+head -n 2 fruits.txt
+
+head -3 fruits.txt
+```
+
+**What This Does**
+- head shows first 10 lines by default. -n sets number of lines. head -n 2 or head -2 shows first 2 lines. Useful for previewing files or checking headers.First command shows all 5 lines (file shorter than 10). Second shows first 2 fruits. Third shows first 3 fruits.
+
+**Pro Tips**
+1. head defaults to 10 lines
+2. head -n 5 or head -5 (both work)
+3. Useful for CSV headers: head -1 data.csv
+4. Quick file preview without opening entire file
+
+**Common Mistakes to Avoid**
+- Not specifying -n when you want specific line count
+- Expecting to see more than first 10 lines without -n flag
