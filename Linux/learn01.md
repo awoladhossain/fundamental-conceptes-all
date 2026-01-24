@@ -602,3 +602,24 @@ cat fruits.txt
 - Using cat on huge files (floods terminal, hard to read)
 - Not knowing when to use less instead
 
+## Page through files with less
+
+```bash
+less log.txt
+```
+
+**What This Does**
+- less opens file in pager (one screen at a time). Navigate with arrows/Page Up/Down. Press q to quit. Space for next page. / to search. Better than cat for large files.log.txt opens in less. You can scroll up/down. Press q to exit. Interactive viewing experience.
+
+**Pro Tips**
+1. Space = next page
+2. b = previous page
+3. `/ then text = search forward`
+4. `? then text = search backward`
+5. n = next search match
+6. q = quit
+7. less > more (more is older, less is better)
+
+**Common Mistakes to Avoid**
+- Not knowing how to exit (press q)
+- Using cat instead of less for large files
