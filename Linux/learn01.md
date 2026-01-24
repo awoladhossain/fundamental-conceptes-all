@@ -670,3 +670,6 @@ tail -3 fruits.txt
 **Common Mistakes to Avoid**
 - Confusing head and tail
 - Not using tail for large log files (using cat instead)
+
+
+
