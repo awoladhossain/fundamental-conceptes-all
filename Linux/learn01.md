@@ -646,3 +646,27 @@ head -3 fruits.txt
 **Common Mistakes to Avoid**
 - Not specifying -n when you want specific line count
 - Expecting to see more than first 10 lines without -n flag
+
+
+### View end of files with tail
+
+```bash
+tail log.txt
+
+tail -n 2 fruits.txt
+
+tail -3 fruits.txt
+```
+
+**What This Does**
+- tail shows last 10 lines by default. -n sets number of lines. Opposite of head. Essential for viewing recent log entries.First command shows last lines of log (all 5 since file is short). Second shows last 2 fruits (date, elderberry). Third shows last 3 fruits.
+
+**Pro Tips**
+1. tail defaults to 10 lines
+2. tail -n 20 or tail -20 (both work)
+3. Essential for log files: tail -n 50 /var/log/syslog
+4. Combine with grep: tail -100 log.txt | grep ERROR
+
+**Common Mistakes to Avoid**
+- Confusing head and tail
+- Not using tail for large log files (using cat instead)
