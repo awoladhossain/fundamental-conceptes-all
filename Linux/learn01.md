@@ -578,3 +578,27 @@ echo writes text to files. > creates new file. -e enables escape sequences like 
 **Common Mistakes to Avoid**
 - Using > instead of >> and accidentally overwriting files
 - Forgetting quotes around text with spaces
+
+### View entire file with cat
+
+```bash
+cat hello.txt
+
+cat log.txt
+
+cat fruits.txt
+```
+
+**What This Does**
+- cat (concatenate) prints entire file content. Good for small files. Name comes from ability to concatenate multiple files. Outputs everything at once.Each file's complete contents printed to screen. hello.txt shows one line, log.txt shows 5 lines, fruits.txt shows 5 fruit names.
+
+**Pro Tips**
+1. cat is best for small files (<100 lines)
+2. cat file1 file2 concatenates multiple files
+3. cat -n adds line numbers
+4. For large files, use less instead (cat will flood your screen)
+
+**Common Mistakes to Avoid**
+- Using cat on huge files (floods terminal, hard to read)
+- Not knowing when to use less instead
+
