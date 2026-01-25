@@ -132,3 +132,57 @@ find . -type d
 - Starting find in / (searches entire filesystem, very slow)
 - Forgetting . means current directory
 
+
+### Combine grep with other commands
+
+```bash
+cat log.txt | grep ERROR
+
+ls -l | grep txt
+
+find . -name '*.txt' -exec grep ERROR {} \;
+```
+
+**What This Does**
+- | (pipe) sends output of one command to input of next. cat | grep searches file contents. ls | grep filters directory listings. find -exec runs command on each result.
+- First finds ERROR in log.txt. Second shows only .txt files from ls. Third finds all .txt files and searches each for ERROR.
+
+
+**Pro Tips**
+1. | chains commands together
+2. Output of left becomes input of right
+3. Common: ls | grep pattern
+4. Common: cat file | grep search
+5. find -exec is powerful but complex (use carefully)
+6. Can chain multiple pipes: cat file | grep ERROR | grep -v DEBUG
+
+**Common Mistakes to Avoid**
+- Confusing | (pipe) with > (redirect)
+- Complex -exec syntax (easier to use find | xargs)
+
+
+### Practice real-world scenarios
+
+```bash
+echo -e 'DEBUG: Starting\nINFO: Processing\nERROR: Failed\nWARN: Retrying\nINFO: Success' > app.log
+
+grep ERROR app.log
+
+grep -E 'ERROR|WARN' app.log
+
+tail -n 5 app.log | grep -v DEBUG
+```
+
+**What This Does**
+- grep -E enables extended regex. | combines pattern matching. Real DevOps: filter logs, find errors, exclude debug lines. These patterns solve daily tasks.
+- First finds ERROR line. Second finds ERROR or WARN lines. Third shows last 5 lines excluding DEBUG entries.
+
+**Pro Tips**
+1. grep -E 'pattern1|pattern2' matches either pattern
+2. Pipe tail and grep for recent errors only
+3. grep -v excludes unwanted lines
+4. Real-world: tail -f /var/log/app.log | grep ERROR (monitor for errors)
+
+**Common Mistakes to Avoid**
+* Not using -E for OR patterns (| needs -E flag)
+* Forgetting pipes are processed left-to-right
