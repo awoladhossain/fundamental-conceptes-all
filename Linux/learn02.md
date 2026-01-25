@@ -186,3 +186,24 @@ tail -n 5 app.log | grep -v DEBUG
 **Common Mistakes to Avoid**
 * Not using -E for OR patterns (| needs -E flag)
 * Forgetting pipes are processed left-to-right
+
+### Clean up practice files
+
+```bash
+cd ~
+
+rm -r search-practice
+
+ls
+
+```
+
+**What This Does**
+- Clean up our practice workspace. Always verify you're in the right directory (pwd) before rm -r.search-practice directory and all contents removed. Clean slate.
+
+**Pro Tips**
+1. Always pwd before rm -r
+2. Consider keeping practice directories for reference
+
+**Common Mistakes to Avoid**
+- Not checking pwd before rm -r
