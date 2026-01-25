@@ -97,3 +97,38 @@ find . -type d
 - Not quoting wildcards: find . -name *.txt (wrong!)
 - Starting find in / (searches entire filesystem, very slow)
 - Forgetting . means current directory
+
+
+### Find files by name
+
+```bash
+find . -name '*.txt'
+
+find . -name 'log*'
+
+find ~ -name 'fruits.txt'
+
+find . -type f
+
+find . -type d
+```
+
+**What This Does**
+- find searches directory trees. . means current directory. -name matches filenames. -type f finds files. -type d finds directories. * wildcard needs quotes to prevent shell expansion.
+- First finds all .txt files in current dir. Second finds files starting with 'log'. Third searches home for fruits.txt. Fourth lists all files. Fifth lists all directories.
+
+
+**Pro Tips**
+1. find . starts search in current directory
+2. find ~ searches entire home directory
+3. `-name is case-sensitive`
+4. `-iname for case-insensitive`
+5. `-type f = files only`
+6. `-type d = directories only`
+7. ALWAYS quote patterns: '*.txt' not *.txt
+
+**Common Mistakes to Avoid**
+- Not quoting wildcards: find . -name *.txt (wrong!)
+- Starting find in / (searches entire filesystem, very slow)
+- Forgetting . means current directory
+
