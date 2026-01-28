@@ -73,3 +73,35 @@ ls -l script.sh
 - Trying to run script without execute permission (Permission denied)
 - Typing script.sh instead of ./script.sh (command not found)
 - Not understanding ./ means current directory
+
+### Remove write permission
+
+```bash
+chmod -w config.conf
+
+ls -l config.conf
+
+echo 'test' > config.conf
+
+chmod +w config.conf
+
+echo 'test' > config.conf
+
+ls -l config.conf
+```
+
+**What This Does**
+- chmod -w removes write permission. File becomes read-only (protection against accidental changes). chmod +w restores write permission. Useful for configuration files you want to protect.
+- `-w` makes file read-only (r--r--r--). Trying to write fails with 'Permission denied'. +w restores write (rw-r--r--). Write succeeds.
+
+
+**Pro Tips**
+1. `+ adds permission, - removes permission`
+2. chmod -w makes read-only (can't modify or delete)
+3. chmod +w makes writable again
+4. Useful for: protecting production configs, preventing accidental rm
+5. Owner can still chmod even if file is read-only
+
+**Common Mistakes to Avoid**
+- Removing write and not knowing how to restore it
+- Thinking read-only prevents deletion (directory permissions matter too)
