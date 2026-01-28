@@ -44,3 +44,32 @@ ls -l script.sh
 - Confusing owner/group/other sections
 - Not knowing x is needed to execute scripts AND enter directories
 - Reading permissions right-to-left (it's left-to-right)
+
+### Make a script executable
+
+```bash
+echo '#!/bin/bash' > script.sh
+echo 'echo "Hello from script"' >> script.sh
+./script.sh
+chmod +x script.sh
+./script.sh
+ls -l script.sh
+```
+
+**What This Does**
+- chmod changes permissions. +x adds execute permission for everyone. Before chmod, script can't run (Permission denied). After, it executes. ls -l shows x permission added.
+
+- First ./script.sh fails with 'Permission denied'. chmod +x makes it executable. Second ./script.sh runs successfully, prints 'Hello from script'. ls -l shows -rwxr-xr-x (x added).
+
+
+**Pro Tips**
+1. chmod +x adds execute for owner, group, and other
+2. +x is shorthand for making scripts runnable
+3. `./script.sh` runs script in current directory
+4. `#!/bin/bash` is shebang (tells system which interpreter to use)
+5. Scripts need both r and x permissions to run
+
+**Common Mistakes to Avoid**
+- Trying to run script without execute permission (Permission denied)
+- Typing script.sh instead of ./script.sh (command not found)
+- Not understanding ./ means current directory
