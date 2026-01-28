@@ -105,3 +105,32 @@ ls -l config.conf
 **Common Mistakes to Avoid**
 - Removing write and not knowing how to restore it
 - Thinking read-only prevents deletion (directory permissions matter too)
+
+### Set specific user/group permissions
+
+```bash
+chmod u+x,g-w,o-r data.txt
+
+ls -l data.txt
+
+chmod u=rw,g=r,o= config.conf
+
+ls -l config.conf
+```
+
+**What This Does**
+- u=owner, g=group, o=other. u+x adds execute for owner. g-w removes write for group. o-r removes read for others. Comma separates multiple changes. = sets exact permissions (replacing existing).
+
+- First command modifies data.txt permissions specifically for each category. Second command sets config.conf to: owner read+write, group read-only, others no permissions.
+
+**Pro Tips**
+1. u = user/owner, g = group, o = other, a = all
+2. `+ adds, - removes, = sets exactly`
+3. Combine with commas: chmod u+x,g+x,o-r file
+4. chmod u=rw,g=r,o= means owner rw, group r, other nothing
+5. Most secure: owner only (u=rw,g=,o=)
+
+**Common Mistakes to Avoid**
+- Spaces around commas: chmod u+x, g+x (wrong! no spaces)
+- Confusing = (set) with + (add) and - (remove)
+- Not knowing o= removes all permissions for others
