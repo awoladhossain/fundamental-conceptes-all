@@ -134,3 +134,35 @@ ls -l config.conf
 - Spaces around commas: chmod u+x, g+x (wrong! no spaces)
 - Confusing = (set) with + (add) and - (remove)
 - Not knowing o= removes all permissions for others
+
+
+### Use numeric (octal) permissions
+
+```bash
+chmod 755 script.sh
+ls -l script.sh
+chmod 644 config.conf
+ls -l config.conf
+chmod 600 data.txt
+ls -l data.txt
+```
+
+**What This Does**
+- Numeric format: 3 digits for owner/group/other. Each digit is sum: r=4, w=2, x=1. 755 = rwxr-xr-x (7=4+2+1, 5=4+1, 5=4+1). 644 = rw-r--r--. 600 = rw------- (owner only). Faster than symbolic mode.
+
+- 755 makes script executable by all (rwxr-xr-x). 644 makes config readable by all, writable by owner (rw-r--r--). 600 makes data private to owner (rw-------).
+
+
+**Pro Tips**
+1. r=4, w=2, x=1 (add them up)
+2. 7 = rwx (4+2+1)
+3. 6 = rw- (4+2)
+4. 5 = r-x (4+1)
+5. 4 = r-- (4)
+6. 0 = --- (none)
+7. Common: 755 (scripts), 644 (files), 600 (secrets), 700 (private dirs)
+
+**Common Mistakes to Avoid**
+- Not understanding how to calculate: 6=rw, 4=r, 0=none
+- Using 777 (dangerous! everyone can do everything)
+- Using 666 on executables (they need x permission)
