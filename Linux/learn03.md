@@ -162,7 +162,7 @@ ls -l data.txt
 6. 0 = --- (none)
 7. Common: 755 (scripts), 644 (files), 600 (secrets), 700 (private dirs)
 
-**Common Mistakes to Avoid**
+***Common Mistakes to Avoid***
 - Not understanding how to calculate: 6=rw, 4=r, 0=none
 - Using 777 (dangerous! everyone can do everything)
 - Using 666 on executables (they need x permission)
