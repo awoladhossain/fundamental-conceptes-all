@@ -221,3 +221,41 @@ id
 **Common Mistakes to Avoid**
 - Not understanding owner vs group vs other
 - Trying to modify files you don't own (Permission denied)
+
+
+### Directory permissions
+
+```bash
+mkdir testdir
+
+chmod 644 testdir
+
+ls testdir
+
+cd testdir
+
+chmod 755 testdir
+
+cd testdir
+
+pwd
+```
+
+**What This Does**
+- Directories need different permissions. r = list contents (ls). w = create/delete files inside. x = enter directory (cd). Without x, can't cd even if you have r. 755 is standard for directories.
+
+- 644 on directory allows ls but not cd (Permission denied). 755 allows both ls and cd. You successfully enter testdir after chmod 755
+
+**Pro Tips**
+1. Directories MUST have x to enter them (cd)
+2. Directory r = list files (ls)
+3. Directory w = create/delete files inside
+4. Directory x = enter/traverse (cd)
+5. Standard dir permissions: 755 (rwxr-xr-x)
+6. Private dirs: 700 (rwx------)
+
+
+**Common Mistakes to Avoid**
+- Setting directory to 644 (can't cd into it)
+- Not understanding x means 'traverse' for directories
+- Using file permissions on directories
