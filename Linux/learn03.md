@@ -259,3 +259,37 @@ pwd
 - Setting directory to 644 (can't cd into it)
 - Not understanding x means 'traverse' for directories
 - Using file permissions on directories
+
+
+### Recursive permission changes
+
+```bash
+cd ~/perms-practice
+
+mkdir -p project/{src,tests,docs}
+
+touch project/src/app.js project/tests/test.js project/docs/readme.md
+
+ls -lR project
+
+chmod -R 755 project
+
+ls -lR project
+```
+**What This Does**
+- chmod -R applies permissions recursively (directory + all contents). Useful for setting permissions on entire project trees. -R means recursive. Changes all files and subdirectories.
+- Project tree created with default permissions. chmod -R 755 sets rwxr-xr-x on all directories and files. ls -lR shows changed permissions throughout tree.
+
+
+**Pro Tips**
+1. chmod -R applies to everything inside
+2. Use for: project directories, website files, shared folders
+3. Be careful: chmod -R 777 is dangerous (security risk)
+4. Common: chmod -R 755 for web directories
+5. Common: chmod -R 600 for sensitive config directories
+
+
+**Common Mistakes to Avoid**
+- Using chmod -R 777 (massive security hole)
+- Not understanding -R changes EVERYTHING inside
+- Recursively removing execute on directories (breaks cd)
