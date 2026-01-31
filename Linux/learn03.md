@@ -195,3 +195,29 @@ ls -l
 - Using 777 on everything (major security hole)
 - Not securing SSH keys (should be 600)
 - Not making scripts executable (should be 755)
+
+
+### Understand file ownership
+```bash
+ls -l
+whoami
+groups
+id
+```
+
+**What This Does**
+- ls -l shows owner and group (columns 3 and 4). whoami shows your username. groups shows groups you belong to. id shows user ID (UID) and group IDs (GIDs). Ownership determines who can modify permissions.
+
+- ls -l shows your username as owner. whoami confirms your username. groups lists your groups. id shows numeric IDs.
+
+
+**Pro Tips**
+1. Every file has an owner and a group
+2. Owner can always change permissions (even if read-only)
+3. Root user can change any file's permissions
+4. Groups allow sharing files among team members
+5. User IDs (UID) start at 1000 for regular users
+
+**Common Mistakes to Avoid**
+- Not understanding owner vs group vs other
+- Trying to modify files you don't own (Permission denied)
