@@ -293,3 +293,31 @@ ls -lR project
 - Using chmod -R 777 (massive security hole)
 - Not understanding -R changes EVERYTHING inside
 - Recursively removing execute on directories (breaks cd)
+
+
+### Clean up and review
+
+```bash
+cd ~
+chmod -R 755 perms-practice
+rm -r perms-practice
+ls
+```
+
+**What This Does**
+- Set 755 to ensure we can delete everything (write permission). rm -r removes directory tree. Good practice: check permissions before rm if deletion fails.
+
+- perms-practice directory and all contents removed. Clean workspace.
+
+
+**Pro Tips**
+
+1. If rm fails, check permissions with ls -l
+2. chmod -R 755 makes everything deletable
+3. pwd before rm -r (safety check)
+4. Remember: 755 scripts, 644 files, 600 secrets, 700 private
+
+
+**Common Mistakes to Avoid**
+-  Can't delete files due to permissions (need write on directory)
+- Not reviewing permission fundamentals before moving on
