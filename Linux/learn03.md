@@ -166,3 +166,32 @@ ls -l data.txt
 - Not understanding how to calculate: 6=rw, 4=r, 0=none
 - Using 777 (dangerous! everyone can do everything)
 - Using 666 on executables (they need x permission)
+
+### Common permission patterns
+
+```bash
+chmod 755 script.sh
+
+chmod 644 config.conf
+
+chmod 600 data.txt
+
+ls -l
+```
+
+**What This Does**
+- Best practices: 755 for scripts (owner can modify, all can execute). 644 for config/text files (owner can modify, all can read). 600 for sensitive data (owner only). 700 for private directories.
+- script.sh: rwxr-xr-x (755). config.conf: rw-r--r-- (644). data.txt: rw------- (600). Each has appropriate security level.
+
+**Pro Tips**
+1. Scripts/binaries: 755 (rwxr-xr-x)
+2. Config files: 644 (rw-r--r--)
+3. Secrets/keys: 600 (rw-------)
+4. Directories: 755 (rwxr-xr-x)
+5. Private dirs: 700 (rwx------)
+6. Never: 777 (security risk!)
+
+**Common Mistakes to Avoid**
+- Using 777 on everything (major security hole)
+- Not securing SSH keys (should be 600)
+- Not making scripts executable (should be 755)
