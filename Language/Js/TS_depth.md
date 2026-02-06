@@ -307,3 +307,79 @@ function move(pet: Fish | Bird) {
   }
 }
 ```
+
+## Generics মানে হলো "Type Variable"। আমরা যেমন ফাংশনে 'ভ্যালু' পাস করি, জেনেরিক্সে আমরা 'টাইপ' পাস করি।
+
+### জেনেরিক্স (Generics) কেন দরকার? (The Problem)
+ধরুন, আপনার কাছে একটি ফাংশন আছে যা একটি অ্যারে থেকে শেষ এলিমেন্টটা রিটার্ন করবে।
+
+- যদি আপনি number[] দেন, সে number রিটার্ন করবে।
+
+- যদি আপনি string[] দেন, সে string রিটার্ন করবে।
+
+সমস্যা: আপনি যদি টাইপ any দেন, তবে টাইপ সেফটি হারিয়ে যাবে। আর যদি টাইপ ফিক্সড করে দেন, তবে অন্য টাইপের জন্য আলাদা ফাংশন লিখতে হবে।
+
+## জেনেরিক্স সমাধান (The Concept)
+আমরা ফাংশনের নামের পাশে <T> লিখি। এই T হলো একটি প্লেসহোল্ডার বা ভেরিয়েবল, যেখানে আপনি পরে যেকোনো টাইপ বসাতে পারবেন।
+
+```ts
+function getLastElement<T>(arr: T[]): T {
+    return arr[arr.length - 1];
+}
+
+// ব্যবহারের সময়:
+const lastNum = getLastElement<number>([10, 20, 30]); // T এখানে number
+const lastStr = getLastElement<string>(["Apple", "Banana"]); // T এখানে string
+```
+এখানে কী ঘটল? যখন আপনি <number> পাস করলেন, টাইপস্ক্রিপ্ট ফাংশনটির সব T কে number দিয়ে রিপ্লেস করে দিল। এর ফলে আপনি কোড লিখলেন একবার, কিন্তু এটি সব ধরনের টাইপের জন্য কাজ করল।
+
+## Generic Interfaces & Types
+শুধু ফাংশন নয়, আপনি ইন্টারফেস বা টাইপকেও জেনেরিক বানাতে পারেন। যেমন একটি API রেসপন্স এর কাঠামো:
+
+```ts
+interface ApiResponse<T> {
+    status: number;
+    data: T; // এখানে ডাটা যেকোনো কিছু হতে পারে
+    message: string;
+}
+
+const userResponse: ApiResponse<{ name: string; age: number }> = {
+    status: 200,
+    data: { name: "Sakib", age: 25 },
+    message: "Success"
+};
+```
+
+## Generic Constraints (সীমাবদ্ধতা দেওয়া)
+মাঝে মাঝে আপনি চান T যেকোনো টাইপ হোক, কিন্তু তার অন্তত কিছু নির্দিষ্ট প্রপার্টি থাকুক। একে বলে Constraints (ব্যবহার করা হয় extends কীওয়ার্ড)।
+
+ধরুন, আপনি এমন একটি ফাংশন চান যা সবকিছুর .length প্রিন্ট করবে। কিন্তু সব ডাটার তো আর .length নেই (যেমন নাম্বারের নেই)।
+
+```ts
+interface HasLength {
+    length: number;
+}
+
+function printLength<T extends HasLength>(item: T) {
+    console.log(item.length);
+}
+
+printLength("Hello"); // OK (স্ট্রিংয়ের লেন্থ আছে)
+printLength([1, 2, 3]); // OK (অ্যারের লেন্থ আছে)
+// printLength(10); // Error! (নাম্বারের লেন্থ নেই)
+```
+
+## Multiple Generics (একাধিক জেনেরিক)
+আপনি চাইলে একটি ফাংশনে একাধিক টাইপ ভেরিয়েবল ব্যবহার করতে পারেন।
+```ts
+
+function mergeObjects<T, U>(obj1: T, obj2: U) {
+    return { ...obj1, ...obj2 };
+}
+
+const combined = mergeObjects({ name: "Rohan" }, { id: 501 });
+// combined এখন { name: string } & { id: number } টাইপ হয়ে গেল।
+```
+
+**স্টাফ ইঞ্জিনিয়ার পারসপেক্টিভ: জেনেরিক্স কেন শিখবেন?
+১. Code Reusability: একই লজিক বারবার না লিখে একবার জেনেরিক ফাংশন লিখে রাখুন। ২. Type Safety with Flexibility: any ব্যবহার না করেই ডাইনামিক ডাটা হ্যান্ডেল করা যায়। ৩. Library Development: আপনি যদি নিজের কোনো প্লাগইন বা লাইব্রেরি বানাতে চান, জেনেরিক্স ছাড়া আপনি প্রো-লেভেলের কোড লিখতে পারবেন না।**
