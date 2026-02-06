@@ -191,8 +191,8 @@ Short:   2001:db8::1
 | :--- | :--- | :--- |
 | **Address Count** (অ্যাড্রেস সংখ্যা) | 4.3 billion (৪.৩ বিলিয়ন) | 340 undecillion (৩৪০ আনডিসিলিয়ন) |
 | **Address Length** (অ্যাড্রেস দৈর্ঘ্য) | 32 bits (৩২ বিট) | 128 bits (১২৮ বিট) |
-| **NAT Required** (NAT এর প্রয়োজনীয়তা) | Yes (প্রয়োজন হয়) | No (প্রয়োজন নেই) |
-| **Auto Configuration** (অটো কনফিগারেশন) | DHCP needed (DHCP প্রয়োজন) | Automatic with SLAAC (SLAAC দিয়ে স্বয়ংক্রিয়) |
+| **NAT Required** (NAT এর প্রয়োজনীয়তা Network Address Translation) | Yes (প্রয়োজন হয়) | No (প্রয়োজন নেই) |
+| **Auto Configuration** (অটো কনফিগারেশন) | DHCP needed (DHCP প্রয়োজন) | Automatic with SLAAC (SLAAC দিয়ে স্বয়ংক্রিয় SLAAC - Stateless Address Autoconfiguration) |
 | **Security** (নিরাপত্তা) | Optional IPsec (IPsec ঐচ্ছিক) | Built-in IPsec (IPsec বিল্ট-ইন থাকে) |
 | **Header Size** (হেডার সাইজ) | Variable (পরিবর্তনশীল) | Fixed - faster (স্থায়ী - দ্রুততর) |
 
