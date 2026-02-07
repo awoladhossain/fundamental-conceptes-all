@@ -383,3 +383,220 @@ const combined = mergeObjects({ name: "Rohan" }, { id: 501 });
 
 **স্টাফ ইঞ্জিনিয়ার পারসপেক্টিভ: জেনেরিক্স কেন শিখবেন?
 ১. Code Reusability: একই লজিক বারবার না লিখে একবার জেনেরিক ফাংশন লিখে রাখুন। ২. Type Safety with Flexibility: any ব্যবহার না করেই ডাইনামিক ডাটা হ্যান্ডেল করা যায়। ৩. Library Development: আপনি যদি নিজের কোনো প্লাগইন বা লাইব্রেরি বানাতে চান, জেনেরিক্স ছাড়া আপনি প্রো-লেভেলের কোড লিখতে পারবেন না।**
+
+
+## Partial<T> (সবকিছুকে অপশনাল করা)
+ধরুন, আপনার একটা User ইন্টারফেস আছে যেখানে name, email, এবং age দিতেই হবে (Required)। কিন্তু আপনি এমন একটা ফাংশন লিখছেন যেটা দিয়ে ইউজার তার প্রোফাইল Update করবে। এখন প্রোফাইল আপডেট করার সময় তো ইউজার সব ডাটা নাও দিতে পারে, সে হয়তো শুধু নাম পাল্টাবে।
+
+এখানেই আসে Partial। এটি একটি টাইপের সব প্রপার্টিকে Optional (?) বানিয়ে দেয়।
+
+```ts
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+}
+
+// Partial ব্যবহার করায় এখন name, email বা age না দিলেও TS এরর দিবে না
+function updateUser(id: number, updates: Partial<User>) {
+  console.log(`Updating user ${id} with:`, updates);
+}
+
+updateUser(1, { name: "Sakib" }); // OK! শুধু নাম দিচ্ছি
+updateUser(2, { age: 25, email: "s@test.com" }); // OK!
+```
+
+**পেছনের কাহিনী: Partial<User> মনে মনে সব প্রপার্টির শেষে একটা ? বসিয়ে দেয়: { id?: number; name?: string; ... }**
+
+## Omit<T, Keys> (নির্দিষ্ট কিছু বাদ দেওয়া)
+Omit মানে হলো কোনো একটা টাইপ থেকে নির্দিষ্ট কিছু প্রপার্টি বাদ দিয়ে নতুন একটা টাইপ তৈরি করা।
+
+উদাহরণ: ধরুন আপনি ডাটাবেস থেকে ইউজার ডাটা পাচ্ছেন। সেখানে পাসওয়ার্ডও আছে। কিন্তু আপনি যখন ফ্রন্টএন্ডে বা অন্য কোথাও ইউজার অবজেক্টটা পাঠাবেন, তখন আপনি চান না যে সেখানে password থাকুক।
+
+```ts
+interface UserAccount {
+  id: number;
+  name: string;
+  email: string;
+  password: string; // আমরা এটা বাদ দিতে চাই
+}
+
+// UserAccount থেকে 'password' বাদ দিয়ে নতুন টাইপ তৈরি করা
+type UserWithoutPassword = Omit<UserAccount, "password">;
+
+const publicInfo: UserWithoutPassword = {
+  id: 1,
+  name: "Rahat",
+  email: "rahat@example.com"
+  // password: "123" // এখানে পাসওয়ার্ড লিখলে TS এরর দিবে!
+};
+```
+
+## বোনাস: Pick<T, Keys> (Omit এর উল্টো)
+যেহেতু আপনি Omit শিখছেন, তাই Pick জেনে রাখা ভালো। Omit যদি বাদ দেয়, Pick শুধু সেইগুলোকেই তুলে নিয়ে আসে যেগুলো আপনি বলে দিবেন।
+
+```ts
+// UserAccount থেকে শুধু name আর email তুলে আনা
+type UserContact = Pick<UserAccount, "name" | "email">;
+
+const contact: UserContact = {
+  name: "Karim",
+  email: "k@test.com"
+};
+```
+
+**Partial<T>: সব প্রপার্টিকে অপশনাল করার জন্য। (সবচেয়ে বেশি লাগে Update বা Edit ফিচারে)।**
+**Omit<T, K>: নির্দিষ্ট কিছু প্রপার্টি (যেমন: Sensitive data বা IDs) বাদ দিয়ে ক্লিন অবজেক্ট তৈরির জন্য।**
+**Pick<T, K>: বড় অবজেক্ট থেকে শুধু দরকারি ১-২টি প্রপার্টি আলাদা করার জন্য।**
+
+
+## Enum হলো এমন একটি নেমস্পেসড ডিক্লেয়ারেশন (Namespaced Declaration) যা ডেভেলপারকে কোডের মধ্যে 'ম্যাজিক নাম্বার' বা 'হার্ডকোডেড স্ট্রিং' পরিহার করে একটি রিডাবল (Readable) এবং টাইপ-সেফ সেট তৈরি করতে দেয়।
+
+1. Enum কেন ব্যবহার করবেন? (The "Why")
+ধরুন, আপনি একটি ই-কমার্স অ্যাপ বানাচ্ছেন। সেখানে অর্ডারের ৩টি স্ট্যাটাস থাকতে পারে: 0 (Pending), 1 (Shipped), 2 (Delivered)।
+
+সমস্যা: আপনি যদি কোডে বারবার 0, 1, 2 ব্যবহার করেন, তবে কয়েক মাস পর আপনি নিজেই ভুলে যাবেন 0 মানে কী ছিল। একে বলা হয় "Magic Numbers", যা কোডকে পচিয়ে ফেলে।
+
+```ts
+enum OrderStatus {
+  Pending,   // ডিফল্টভাবে এর মান ০
+  Shipped,   // মান ১
+  Delivered  // মান ২
+}
+
+let myOrder = OrderStatus.Pending;
+
+if (myOrder === OrderStatus.Pending) {
+  console.log("আপনার অর্ডারটি প্রক্রিয়াধীন।");
+}
+```
+
+2. Enum-এর প্রকারভেদ
+ক) Numeric Enums (সংখ্যার এনাম)
+উপরে যা দেখলেন তা-ই। আপনি চাইলে মান শুরু করতে পারেন যেকোনো সংখ্যা থেকে:
+
+```ts
+enum Direction {
+  Up = 1,
+  Down,    // অটোমেটিক ২ হয়ে যাবে
+  Left,    // ৩
+  Right    // ৪
+}
+```
+
+খ) String Enums (লেখার এনাম)
+এটি সবচেয়ে বেশি জনপ্রিয় এবং রিডাবল (Readable)। এতে ডিবাগিং করা সহজ হয়।
+
+```ts
+enum AppTheme {
+  Light = "LIGHT_MODE",
+  Dark = "DARK_MODE",
+  System = "SYSTEM_DEFAULT"
+}
+
+console.log(AppTheme.Dark); // আউটপুট আসবে: "DARK_MODE"
+```
+
+3. Enum বনাম Union Types ("A" | "B")
+আপনি হয়তো ভাবছেন, type Status = "Pending" | "Shipped" ব্যবহার করলেই তো হতো! পার্থক্যটা কোথায়?
+
+- রানটাইম অস্তিত্ব: Enum(এটি জাভাস্ক্রিপ্টে একটি অবজেক্ট হিসেবে থাকে।) and Union Type(এটি কম্পাইল হওয়ার পর ভ্যানিশ হয়ে যায়।)
+- ব্যবহার : Enum(আপনি OrderStatus.Pending লিখে কোড অটো-কমপ্লিট করতে পারেন।) and Union Type(আপনাকে সরাসরি স্ট্রিং লিখতে হয়।)
+
+4. সাধারণ enum জাভাস্ক্রিপ্টে রূপান্তরের পর কিছুটা বাড়তি কোড তৈরি করে যা পারফরম্যান্সে প্রভাব ফেলতে পারে। আপনি যদি একদম ক্লিন কোড চান, তবে const enum ব্যবহার করুন।
+
+```ts
+const enum UserRole {
+  Admin,
+  Editor,
+  User
+}
+// এটি কম্পাইল হওয়ার পর কোনো বাড়তি অবজেক্ট তৈরি করবে না, সরাসরি মান বসিয়ে দিবে।
+```
+
+## মডিউল: Export (Named vs Default)
+জাভাস্ক্রিপ্ট এবং টাইপস্ক্রিপ্টে প্রতিটি ফাইলই একেকটি Module। একটি ফাইলের কোড অন্য ফাইলে নিতে হলে আপনাকে export ব্যবহার করতে হবে
+
+- ক) Named Export (নাম ধরে পাঠানো)
+একটি ফাইল থেকে আপনি অনেকগুলো জিনিস নাম দিয়ে পাঠাতে পারেন। আমদানির সময় ঠিক সেই নামটাই ব্যবহার করতে হবে।
+
+```ts
+// mathUtils.ts
+export const add = (a: number, b: number) => a + b;
+export const PI = 3.14;
+
+// main.ts
+import { add, PI } from "./mathUtils"; // নির্দিষ্ট নাম ধরে আনা
+```
+
+- খ) Default Export (এককভাবে পাঠানো)
+একটি ফাইল থেকে শুধু একটি জিনিসই default হিসেবে পাঠানো যায়। আমদানির সময় আপনি যেকোনো নাম দিতে পারেন।
+
+```ts
+// Logger.ts
+export default class Logger {
+    log(msg: string) { console.log(msg); }
+}
+
+// main.ts
+import MyLogger from "./Logger"; // এখানে Logger এর বদলে MyLogger নাম দিলেও কাজ করবে
+```
+
+## Namespace (নেমস্পেস): পুরানো কিন্তু দরকারি
+মডিউল আসার আগে টাইপস্ক্রিপ্টে নেমস্পেস ব্যবহার করা হতো। এটি মূলত একটি গ্লোবাল অবজেক্টের ভেতরে আপনার কোডকে গ্রুপ করে রাখে যাতে নামের সংঘর্ষ (Naming conflict) না হয়।
+
+```ts
+namespace Validation {
+    export const isString = (val: any) => typeof val === "string";
+}
+
+// ব্যবহার
+Validation.isString("Hello");
+```
+**বর্তমানে: আধুনিক প্রজেক্টে নেমস্পেস খুব একটা ব্যবহৃত হয় না, Modules-ই এখন স্ট্যান্ডার্ড। তবে আপনি যদি কোনো লিগ্যাসি কোড বা গ্লোবাল লাইব্রেরি নিয়ে কাজ করেন, তবে এটি দেখতে পারেন।**
+
+## Module Resolution (মডিউল রেজোলিউশন)
+এটি হলো সেই প্রসেস যার মাধ্যমে টাইপস্ক্রিপ্ট কম্পাইলার খুঁজে বের করে যে আপনার import { x } from "module-name" আসলে কোন ফাইলে আছে।
+
+টাইপস্ক্রিপ্টে মূলত দুটি স্ট্র্যাটেজি আছে:
+
+- Classic: এটি পুরনো পদ্ধতি। এটি বর্তমান ফাইলের ডিরেক্টরিতে খুঁজে, না পেলে উপরের ডিরেক্টরিতে খুঁজতে থাকে।
+
+- Node: এটি আধুনিক এবং সবচেয়ে বেশি ব্যবহৃত। এটি node_modules ফোল্ডার এবং package.json ফলো করে ফাইল খুঁজে বের করে।
+
+**সিনিয়র টিপস: আপনার tsconfig.json ফাইলে "moduleResolution": "node" বা "bundler" সেট করা থাকে। যদি এটি ভুল থাকে, তবে আপনার কোড সব ঠিক থাকলেও টাইপস্ক্রিপ্ট "Module not found" এরর দিবে।**
+
+**যখন import express from 'express' লেখেন, টাইপস্ক্রিপ্ট বা নোডজেএস (Node.js) তখন একটি নির্দিষ্ট নিয়ম মেনে ওই 'express' শব্দটিকে একটি ফিজিক্যাল ফাইলের সাথে মেলানোর চেষ্টা করে। একেই বলে Module Resolution।**
+
+
+1. ১. সে কীভাবে খোঁজে? (The Lookup Process)
+আপনি যখন শুধু নাম লেখেন (কোনো পাথ যেমন ./ বা ../ ছাড়া), তখন সে নিচের ধাপগুলো অনুসরণ করে:
+
+- Core Modules: প্রথমে সে চেক করে এটি নোডের কোনো বিল্ট-ইন মডিউল কি না (যেমন: fs, path, http)।
+
+- node_modules: যদি কোর মডিউল না হয়, তবে সে বর্তমান ফোল্ডারের node_modules চেক করে।
+
+- Parent Folders: যদি সেখানে না পায়, তবে সে এক ধাপ উপরে উঠে তার node_modules চেক করে। এভাবে সে আপনার কম্পিউটারের Root ডিরেক্টরি পর্যন্ত খুঁজতে থাকে।
+
+2. ফোল্ডারের ভেতরে সে কী দেখে?
+ধরুন সে node_modules/express ফোল্ডারটি পেল। এখন সে কীভাবে বুঝবে কোন ফাইলটি মেইন ফাইল?
+
+- package.json: সে প্রথমে এই ফাইলের ভেতরে ঢুকে "main" বা "types" ফিল্ডটি খোঁজে। যদি সেখানে লেখা থাকে "main": "index.js", সে ওই ফাইলটি লোড করে।
+
+- index.ts / index.js: যদি package.json না থাকে, তবে সে ডিফল্টভাবে index ফাইলটি খোঁজে।
+
+3. টাইপস্ক্রিপ্টের বিশেষত্ব: @types
+এক্সপ্রেস (Express) মূলত জাভাস্ক্রিপ্টে লেখা। তাহলে টাইপস্ক্রিপ্ট কীভাবে এর টাইপগুলো বোঝে?
+
+- টাইপস্ক্রিপ্ট যখন দেখে এক্সপ্রেসের নিজের ভেতরে কোনো টাইপ ডেফিনিশন নেই, তখন সে node_modules/@types/express ফোল্ডারটি খোঁজে।
+
+- এজন্যই আমরা অনেক সময় npm install @types/express -D দিয়ে আলাদা করে টাইপ ইনস্টল করি।
+
+4. রিলেটিভ পাথ (Relative Path) বনাম মডিউল
+- import { myFunc } from './myFile': এখানে সে node_modules-এ খুঁজবে না। সে সরাসরি বর্তমান ফোল্ডারে myFile.ts বা myFile.js খুঁজবে।
+
+- import axios from 'axios': এখানে সে সরাসরি node_modules-এ ঝাঁপ দেবে।
+
+**Non-relative import ('express') -> node_modules-এ খোঁজে। ২. Relative import ('./express') -> লোকাল ফোল্ডারে খোঁজে। ৩. Resolution Strategy -> সাধারণত node স্ট্র্যাটেজি ব্যবহার করা হয়।**
+
