@@ -879,8 +879,8 @@ nslookup domain.com
 
 ---
 
-**Last Updated:** January 2025  
-**Version:** 1.0  
+**Last Updated:** January 2025
+**Version:** 1.0
 **Author:** DevOps Learning Guide
 
-*This guide is meant to be a living document. Update it as you learn new commands and techniques!*
+**This guide is meant to be a living document. Update it as you learn new commands and techniques!**
