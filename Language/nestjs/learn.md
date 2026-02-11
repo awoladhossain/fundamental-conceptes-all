@@ -478,3 +478,76 @@ app.useGlobalPipes(
 ***প্যাকেজ তো ইন্সটল করলাম, পাইপও সেটআপ করলাম। এখন DTO-তে যদি কোনো ডেকোরেটর (যেমন @IsString()) না থাকে, তবে কি ভ্যালিডেশন কাজ করবে?"***
 
 - না! আপনি যদি DTO ক্লাসের প্রপার্টির ওপর কোনো ডেকোরেটর না বসান, তবে ValidationPipe সেটাকে চেকই করবে না। এমনকি whitelist: true দেওয়া থাকলেও সেই প্রপার্টিটি ভ্যানিশ হয়ে যাবে যদি তার ওপর কোনো ডেকোরেটর না থাকে।
+
+
+## Spread Operator কী করে?
+
+```ts
+export class AuthService {
+  constructor(private readonly userService: UserService) {}
+  async registerUser(registerUserDto: RegisterUserDto) {
+    const hashedPassword = await bcrypt.hash(registerUserDto.password, 10);
+    return this.userService.createUser({
+      ...registerUserDto,
+      password: hashedPassword,
+    });
+  }
+}
+```
+
+- সহজ কথায়, এটি একটি অবজেক্ট বা অ্যারের ভেতরের সব উপাদানকে "বের করে নিয়ে আসা" বা "ছড়িয়ে দেওয়া"-র কাজ করে।
+
+**আমি যদি password: hashedPassword আগে লিখতাম আর ...registerUserDto পরে লিখতাম, তবে কী হতো?**
+- তবে বিপদ হতো! কারণ স্প্রেড অপারেটর পরে থাকলে সে আগের ভ্যালুকে ওভাররাইট করে দেয়। অর্থাৎ ডাটাবেসে আবার সেই প্লেইন পাসওয়ার্ডই চলে যেত। তাই সবসময় যে জিনিসটা পরিবর্তন করতে চান, সেটা স্প্রেড অপারেটরের পরে লিখতে হয়।
+
+1. স্প্রেড অপারেটর কি ডিপ কপি (Deep Copy) করে?
+- না, এটি Shallow Copy করে। অর্থাৎ অবজেক্টের ভেতর যদি আরও একটি অবজেক্ট থাকে, তবে সেটার শুধু রেফারেন্স কপি হয়। তবে ডিটিও-র ক্ষেত্রে এটি নিয়ে টেনশন করার কিছু নেই।
+
+**Shallow Copy (শ্যালো কপি): মনে করুন, আপনি আপনার বাসার চাবি ডুপ্লিকেট করে আপনার বন্ধুকে দিলেন। এখন আপনার বন্ধু যদি ওই চাবি দিয়ে ঘরে ঢুকে আপনার সোফাটা নীল থেকে লাল করে দেয়, তবে আপনি যখন ঘরে ঢুকবেন, আপনিও সোফাটা লালই দেখবেন। কারণ চাবি দুইটা হলেও বাসা একটাই।**
+
+**Deep Copy (ডিপ কপি): মনে করুন, আপনি আপনার বাসার হুবহু একটি আলাদা বাড়ি পাশের প্লটে বানালেন। এখন আপনার বন্ধু যদি ওই বাড়িতে ঢুকে সোফা লাল করে, আপনার নিজের বাড়ির সোফা কিন্তু নীলই থাকবে। কারণ এখন বাসা দুইটা আলাদা।**
+
+1. Shallow Copy (অগভীর কপি)
+JavaScript-এ আমরা যখন ... (Spread Operator) বা Object.assign() ব্যবহার করি, তখন সেটি Shallow Copy করে।
+
+যদি অবজেক্টের ভেতর শুধু সাধারণ ডাটা (string, number, boolean) থাকে, তবে কোনো সমস্যা নেই। কিন্তু অবজেক্টের ভেতর যদি আরেকটা অবজেক্ট বা অ্যারে থাকে, তবে সে শুধু সেটির রেফারেন্স (ঠিকানা) কপি করে।
+
+```ts
+const user = {
+  name: "Abir",
+  address: { city: "Dhaka" } // এটা একটা নেস্টেড অবজেক্ট
+};
+
+const userCopy = { ...user }; // Shallow Copy
+
+userCopy.name = "Zayed";
+userCopy.address.city = "Chittagong";
+
+console.log(user.name);         // "Abir" (বদল হয়নি - ভালো কথা)
+console.log(user.address.city); // "Chittagong" (বদল হয়ে গেছে! এটাই সমস্যা)
+```
+**কেন হলো? কারণ address অবজেক্টটির মেমোরি অ্যাড্রেস বা চাবি কপি হয়েছে, নতুন কোনো অবজেক্ট তৈরি হয়নি।**
+
+2. Deep Copy (গভীর কপি)
+ডিপ কপি করলে অবজেক্টের ভেতরের সব লেভেলের ডাটা একদম নতুন করে মেমোরিতে জায়গা নেয়। একটি পরিবর্তন করলে অন্যটিতে কোনো প্রভাব পড়ে না।
+
+কিভাবে করবেন? সবচেয়ে সহজ (কিন্তু কিছুটা স্লো) উপায় হলো `JSON.parse(JSON.stringify(obj))` ব্যবহার করা। আধুনিক ব্রাউজারে `structuredClone(obj)` ব্যবহার করা হয়।
+
+```ts
+const user = {
+  name: "Abir",
+  address: { city: "Dhaka" }
+};
+
+const userDeepCopy = JSON.parse(JSON.stringify(user)); // Deep Copy
+
+userDeepCopy.address.city = "Sylhet";
+
+console.log(user.address.city);     // "Dhaka" (অরিজিনাল ডাটা সেফ আছে!)
+console.log(userDeepCopy.address.city); // "Sylhet"
+```
+
+**Shallow Copy: এটি শুধু প্রথম লেভেলের প্রপার্টিগুলোকে কপি করে। নেস্টেড অবজেক্ট বা অ্যারের ক্ষেত্রে এটি অরিজিনাল ডাটার রেফারেন্স শেয়ার করে। (Spread operator, Object.assign)।**
+
+**Deep Copy: এটি অবজেক্টের প্রতিটি লেভেলের ডাটা নতুন করে তৈরি করে, তাই অরিজিনাল অবজেক্টের সাথে কোনো কানেকশন থাকে না। (JSON stringify/parse, structuredClone, Lodash _.cloneDeep)।**
+
