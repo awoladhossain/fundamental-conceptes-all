@@ -635,3 +635,67 @@ console.log(userDeepCopy.address.city); // "Sylhet"
 
 **Deep Copy: এটি অবজেক্টের প্রতিটি লেভেলের ডাটা নতুন করে তৈরি করে, তাই অরিজিনাল অবজেক্টের সাথে কোনো কানেকশন থাকে না। (JSON stringify/parse, structuredClone, Lodash _.cloneDeep)।**
 
+
+## NestJS-এ Mongoose Schema
+
+```ts
+export type UserDocument = HydratedDocument<User>;
+```
+
+- কেন লাগে? মঙ্গোডিবি থেকে যখন আপনি কোনো ডাটা খুঁজে বের করবেন, সেটি শুধু একটি অবজেক্ট থাকে না। তার সাথে মঙ্গুসের অনেক মেথড (যেমন: .save(), .remove()) যুক্ত থাকে।
+- কাজ: HydratedDocument আপনার User ক্লাসের প্রপার্টিগুলোর সাথে মঙ্গুসের নিজস্ব ফিচারগুলোকে "বিয়ে" দিয়ে দেয়। ফলে আপনি যখন কোড লিখবেন, টাইপস্ক্রিপ্ট আপনাকে অটো-সাজেশন দেবে যে এই ইউজারের ওপর .save() চালানো সম্ভব।
+
+## fname: string; তো লিখলাম, আবার @Prop() কেন লাগবে?
+- fname: string শুধু টাইপস্ক্রিপ্টের জন্য। কিন্তু মঙ্গোডিবি বা জাভাস্ক্রিপ্ট এটা চেনে না। @Prop() ডাটাবেসকে বলে দেয় এই ফিল্ডটি কেমন হবে (Required কি না, Default ভ্যালু কী ইত্যাদি)।
+
+## আমি যদি এনাম ব্যবহার না করে সরাসরি role: string দিতাম, তবে সমস্যা কী হতো?
+- বড় সমস্যা হতো "বানান ভুল" (Typo)। ধরুন, কোথাও আপনি লিখলেন 'Admin' (A বড় হাতের), আর কোথাও 'admin'। কোড তখন কাজ করবে না। এনাম ব্যবহার করলে সবসময় Role.ADMIN ব্যবহার করতে হয়, তাই বানান ভুলের কোনো চান্স থাকে না।
+
+## এনামের পরিবর্তে type Role = 'admin' | 'student' ব্যবহার করা কি ভালো?
+- টাইপ ব্যবহার করা যায়, কিন্তু এনাম বেশি শক্তিশালী কারণ এনামকে আপনি কোডের মধ্যে অবজেক্টের মতো ব্যবহার করতে পারেন (যেমন: Object.values(Role) দিয়ে সব রোল বের করা যায়), যা union type দিয়ে করা কঠিন।
+
+
+## MongooseModule.forFeature()
+
+```ts
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from './schemas/user.schema';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
+
+@Module({
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  ],
+  controllers: [UserController],
+  providers: [UserService],
+  exports: [UserService],
+})
+export class UserModule {}
+```
+
+- কেন লাগে? আপনি AppModule-এ ডাটাবেসের সাথে কানেকশন তৈরি করেছেন (forRoot), কিন্তু কোন মডিউলে কোন টেবিল (Collection) ব্যবহার হবে, তা বলে দিতে হয় forFeature দিয়ে।
+- `name: User.name`: এখানে `User.name` আসলে আপনার ক্লাসের নাম (যা হলো "User") রিটার্ন করে। NestJS এই নামটিকে একটি Token হিসেবে ব্যবহার করে যাতে পরে আপনি ডাটাবেস মডেলটিকে ইনজেক্ট করতে পারেন।
+- `schema: UserSchema`: এটি মঙ্গুসকে বলে দেয় যে "User" কালেকশনটি তৈরি করার সময় কোন ডিজাইন বা নিয়মগুলো (fname, email, role) ফলো করতে হবে।
+
+## `constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}`
+
+1. `@InjectModel(User.name)` এটি একটি Parameter Decorator।
+- কাজ: NestJS-এ অনেকগুলো মডেল থাকতে পারে (User, Product, Order)। আপনি এই ডেকোরেটর দিয়ে নির্দিষ্ট করে দিচ্ছেন যে, আপনি শুধু "User" মডেলটিকেই ইনজেক্ট করতে চান।
+- মনে আছে আমরা UserModule-এ User.name দিয়ে একটি টোকেন রেজিস্টার করেছিলাম? এই ডেকোরেটর সেই টোকেনটি খুঁজে বের করে এবং ডাটাবেস মডেলটিকে নিয়ে আসে।
+
+2. `private userModel`
+- এটি TypeScript-এর একটি শর্টকাট। private লেখার ফলে এই userModel ভ্যারিয়েবলটি পুরো ক্লাসের যেকোনো মেথড থেকে this.userModel হিসেবে ব্যবহার করা যাবে।
+
+3. `Model<UserDocument>` এটি হলো ডাটা টাইপ (Type Definition)।
+
+- Model: এটি Mongoose-এর একটি জেনেরিক ক্লাস। এটি আপনার ভ্যারিয়েবলকে মঙ্গুসের সব ফাংশনালিটি (যেমন: find, create, updateOne) দিয়ে দেয়
+- <UserDocument>: এটি মঙ্গুসকে বলে দেয়— "এই মডেলটি থেকে যে ডাটাগুলো আসবে, সেগুলো দেখতে আমাদের সেই UserDocument-এর মতো হবে।" এটি আপনাকে কোড লেখার সময় দারুণ অটো-সাজেশন দিবে।
+
+## name: User.name কেন লিখলাম? (The Token Concept)
+
+নেস্টজেএস (NestJS) একটা মস্ত বড় স্টোর বা গুদামঘরের মতো। আপনি যখন মডিউলে MongooseModule.forFeature লিখছেন, তখন আপনি আপনার মঙ্গুস মডেলটাকে সেই গুদামঘরে জমা রাখছেন।
+
+এখন গুদামঘরে তো হাজারটা জিনিস থাকতে পারে। গুদামঘর থেকে কোনো জিনিস খুঁজে বের করার জন্য একটা "নাম" বা "টোকেন" লাগে।
+- আপনি যদি লিখতেন name: 'AMAR_USER_MODEL', তবে নেস্টজেএস গুদামে এই নামেই ওটা জমা রাখতো।
