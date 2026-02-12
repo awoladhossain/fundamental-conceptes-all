@@ -1,4 +1,88 @@
-# Nest js
+# Nest Js learn
+
+## main.ts
+**NestJS প্রোজেক্ট রান করার জন্য এই main.ts ফাইলটি হলো এন্ট্রি পয়েন্ট।**
+
+1. `import { NestFactory } from '@nestjs/core';`
+NestFactory হলো NestJS-এর একটি কোর ক্লাস। এর কাজ হলো আপনার অ্যাপ্লিকেশনের একটি ইনস্ট্যান্স (Instance) বা কপি তৈরি করা। এটি অনেকটা রাজমিস্ত্রির মতো, যে ব্লুপ্রিন্ট দেখে বাড়ি বানায়।
+
+2. `import { AppModule } from './app.module';`
+AppModule হলো আপনার পুরো অ্যাপের Root Module বা কেন্দ্রীয় নিয়ন্ত্রণ কক্ষ। আপনার অ্যাপে যত কন্ট্রোলার, সার্ভিস বা ডাটাবেস কানেকশন থাকবে, সব এই AppModule-এর সাথে যুক্ত থাকে।
+
+3. `async function bootstrap() { ... }`
+bootstrap মানে হলো "শুরু করা"। যেহেতু সার্ভার শুরু হতে বা ডাটাবেস কানেক্ট হতে কিছুটা সময় লাগে, তাই এটিকে async (Asynchronous) ফাংশন হিসেবে লেখা হয়।
+
+
+## Decorator
+
+`Decorator হলো একটি Design Pattern`
+
+1. ডেকোরেটর কেন দরকার? (The "Why")
+টাইপস্ক্রিপ্টে ডেকোরেটর না থাকলে আপনাকে প্রতিবার ম্যানুয়ালি অনেক কোড লিখতে হতো।
+
+- Express-এ: রাউট সেট করতে app.get('/home', (req, res) => { ... }) লিখতে হয়।
+- NestJS-এ: শুধু ক্লাসের ওপর @Get('/home') লিখে দিলেই NestJS বুঝে নেয় এটা একটা রাউট।
+
+সুবিধা: কোড দেখতে ক্লিন হয়, পড়তে সুবিধা হয় এবং মেটাডাটা (অতিরিক্ত তথ্য) কোডের সাথে জুড়ে দেওয়া যায়।
+
+2. NestJS-এ ডেকোরেটরের প্রকারভেদ
+NestJS-এ মূলত ৪ ধরনের ডেকোরেটর আমরা বেশি ব্যবহার করি:
+
+`Class Decorators (পুরো ক্লাসের জন্য)`
+- `@Module()`: ক্লাসটিকে একটি মডিউলে রূপান্তর করে।
+
+- `@Controller()`: ক্লাসটিকে একটি রাউট হ্যান্ডলারে রূপান্তর করে।
+
+- `@Injectable()`: ক্লাসটিকে একটি সার্ভিস বা প্রোভাইডারে রূপান্তর করে (যাতে অন্য জায়গায় একে ইনজেক্ট করা যায়)।
+
+3. Method Decorators (ফাংশনের জন্য)
+- `@Get(), @Post(), @Put(), @Delete()`: এগুলো HTTP মেথড নির্ধারণ করে।
+
+4. Parameter Decorators (আর্গুমেন্টের জন্য)
+- `@Body():` ইউজারের পাঠানো ডাটা (JSON) ধরার জন্য।
+
+- `@Param():` URL-এর আইডি ধরার জন্য (যেমন: /user/:id)।
+
+- `@Query():` সার্চ কুয়েরি ধরার জন্য (যেমন: ?search=nest)।
+
+4. Property Decorators (ভ্যারিয়েবলের জন্য)
+- `@IsString() বা @IsInt()`: ডাটা ভ্যালিডেশনের জন্য ব্যবহৃত হয় (class-validator লাইব্রেরির মাধ্যমে)।
+
+**Separation of Concerns**
+
+## Dependency Injection (DI)
+
+`@Injectable() এবং AuthService (শ্রমিক বা শেফ)`
+
+```ts
+@Injectable()
+export class AuthService { ... }
+```
+- কেন @Injectable()? এই ডেকোরেটরটি NestJS-কে বলে যে, "এই ক্লাসটি একটি Provider।" অর্থাৎ, এই ক্লাসটিকে অন্য কেউ (যেমন Controller) ব্যবহার করতে চাইবে। NestJS তখন এই ক্লাসের একটি লিস্ট তৈরি করে রাখে যাতে কেউ চাইলে সে সরবরাহ করতে পারে।
+
+- কেন সার্ভিস ব্যবহার করি? আমরা চাইলে সব কোড কন্ট্রোলারে লিখতে পারতাম। কিন্তু সার্ভিস ব্যবহারের মূল কারণ হলো Separation of Concerns। কন্ট্রোলারের কাজ শুধু রিকোয়েস্ট নেওয়া, আর সার্ভিসের কাজ হলো আসল কাজটা (যেমন ডাটাবেসে সেভ করা বা ক্যালকুলেশন) করা।
+
+2. AuthController এবং constructor (ম্যানেজার এবং ইনজেকশন)
+
+```ts
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+  ...
+}
+```
+`এই constructor লাইনে কী হচ্ছে?`
+একে বলা হয় Dependency Injection (DI)। সাধারণত কোনো ক্লাসের মেথড ব্যবহার করতে হলে আমাদের লিখতে হয়: const service = new AuthService(). কিন্তু NestJS-এ আমরা new কিওয়ার্ড ব্যবহার করি না।
+
+`কীভাবে কাজ করে?`
+
+- যখন আপনার অ্যাপ রান হয়, NestJS দেখে যে AuthController তৈরি করতে হলে তার একজন AuthService লাগবে।
+
+- NestJS তার স্টোররুমে (IoC Container) গিয়ে চেক করে দেখে AuthService-এর কোনো অবজেক্ট অলরেডি বানানো আছে কি না।
+
+- যদি থাকে, তবে সে নিজে থেকেই সেই অবজেক্টটি এই কন্ট্রোলারের ভেতর "ইনজেক্ট" বা ঢুকিয়ে দেয়।
+
+- private readonly মানে হলো এই authService এখন এই ক্লাসের একটি নিজস্ব সম্পত্তি হয়ে গেল, যা আপনি this.authService দিয়ে ব্যবহার করতে পারবেন।
 
 ## Dependency Injection (DI)
 
