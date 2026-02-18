@@ -279,3 +279,19 @@ docker rmi redis:7-alpine
 ## Understanding container states
 
 **Learn about the different states a container can be in: created, running, paused, exited.**
+
+```bash
+docker run -d --name demo-nginx nginx
+docker ps
+docker stop demo-nginx
+docker ps -a
+```
+
+- Containers transition through states: created → running → stopped (exited). The `ps` command shows running containers, while `ps -a` shows all containers regardless of state.
+
+- You'll see the container appear in 'docker ps' with UP status, then after stopping it will show 'Exited' status in 'docker ps -a'.
+
+1. Running containers consume resources; stopped containers don't
+2. Stopped containers retain their filesystem and configuration
+3. You can restart stopped containers without losing data
+
