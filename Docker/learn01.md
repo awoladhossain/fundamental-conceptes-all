@@ -295,3 +295,21 @@ docker ps -a
 2. Stopped containers retain their filesystem and configuration
 3. You can restart stopped containers without losing data
 
+## Start and restart containers
+
+```bash
+docker start demo-nginx
+docker ps
+docker restart demo-nginx
+docker ps
+```
+
+- `docker start` resumes a stopped container. `docker restart` stops and then starts a container in one command. Both preserve the container's data.
+
+- The container returns to running state. Notice the container ID and name remain the same - it's the same container, not a new one.
+
+1. Use 'start' for stopped containers, 'restart' for running ones
+2. Restart is useful for applying configuration changes
+3. The container retains its IP address and volumes after restart
+
+
