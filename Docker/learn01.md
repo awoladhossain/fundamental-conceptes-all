@@ -367,3 +367,135 @@ docker logs -f demo-nginx
 3. Logs persist even after container stops
 4. Use grep to filter: docker logs demo-nginx | grep error
 
+## Detached Mode (-d)
+
+- এটি সবচেয়ে বেশি ব্যবহৃত হয়। এর মানে হলো কন্টেইনারটি ব্যাকগ্রাউন্ডে চলবে। আপনি কমান্ড দেওয়ার পর কন্টেইনারটি চালু হয়ে যাবে এবং আপনি আপনার টার্মিনালটি অন্য কাজের জন্য ব্যবহার করতে পারবেন।
+
+```bash
+docker run -d -p 3000:3000 ts-docker:v1
+```
+- সুবিধা: টার্মিনাল বন্ধ করে দিলেও কন্টেইনার বন্ধ হবে না। এটি সার্ভার বা ডাটাবেজ রান করার জন্য পারফেক্ট।
+
+```bash
+docker start --attach ts-docker-container
+```
+1.  লাইভ লগ দেখা (Debugging): আপনার TypeScript অ্যাপ্লিকেশনে যদি কোনো বাগ (bug) থাকে বা কোড রান করার সময় কোনো এরর হয়, তবে --attach করলে সেই এরর মেসেজটি আপনি সরাসরি টার্মিনালে দেখতে পাবেন।
+
+- উদাহরণ: ধরুন ডাটাবেজ কানেক্ট না হওয়ার কারণে অ্যাপটি ক্র্যাশ করছে। অ্যাটাচ করা থাকলে আপনি সাথে সাথেই Error: Connection refused লেখাটি দেখতে পাবেন।
+
+2. ইন্টারঅ্যাক্টিভ কাজ (Input/Output): যদি আপনার অ্যাপটি ইউজারের কাছ থেকে কোনো ইনপুট চায়, তবে --attach ছাড়া আপনি সেই ইনপুট দিতে পারবেন না। এটি আপনার টার্মিনালকে কন্টেইনারের সাথে সরাসরি পাইপের মতো জুড়ে দেয়।
+
+3. কন্টেইনারের বর্তমান অবস্থা বোঝা:
+কখনও কখনও docker start দিলে মনে হয় কন্টেইনারটি চালু হয়েছে, কিন্তু আসলে সেটি ২ সেকেন্ড পরেই বন্ধ হয়ে যায়। --attach করলে আপনি দেখতে পাবেন কেন সেটি দ্রুত বন্ধ হয়ে যাচ্ছে (যেমন: কোনো ফাইল মিসিং বা কনফিগারেশন ভুল)।
+
+## Inspect container details
+
+```bash
+docker inspect demo-nginx
+docker inspect --format '{{.State.Status}}' demo-nginx
+docker inspect --format '{{.NetworkSettings.IPAddress}}' demo-nginx
+docker inspect --format '{{.Config.Image}}' demo-nginx
+```
+- Inspect returns detailed JSON about the container. Use --format with Go templates to extract specific fields like IP address, status, or volumes.
+
+- First command shows full JSON. Subsequent commands show just the requested field: status, IP address, and image name.
+
+1. Inspect shows everything: environment, volumes, networks, ports
+2. Use jq for better JSON formatting: docker inspect demo-nginx | jq
+3. Check State section for detailed status information
+4. NetworkSettings shows IP, ports, and network configuration
+
+## Monitor container resource usage
+```bash
+docker stats demo-nginx
+docker stats --no-stream demo-nginx
+```
+- Stats displays live resource consumption. Without --no-stream, it updates continuously. With it, shows a single snapshot. Press Ctrl+C to exit continuous mode.
+
+- You'll see a table with CPU %, memory usage, network I/O, and block I/O updating in real-time.
+
+1. Run 'docker stats' (no name) to see all containers
+2. Use this to identify resource-hungry containers
+3. Memory % is of total system memory
+4. NET I/O shows total data sent/received
+
+## Copy files between host and container
+
+```bash
+echo '<h1>Hello from Docker!</h1>' > custom.html
+docker cp custom.html demo-nginx:/usr/share/nginx/html/
+docker exec demo-nginx cat /usr/share/nginx/html/custom.html
+docker cp demo-nginx:/etc/nginx/nginx.conf ./nginx-backup.conf
+```
+
+- The `docker cp` command copies files between host and container. Works with both running and stopped containers. Format: source → destination.
+
+- The HTML file is copied into the container and can be accessed. The config file is copied from container to your current directory.
+
+1. Copy directories: docker cp ./folder container:/path/
+2. Works even if container is stopped
+3. Use this for quick config changes or log extraction
+4. For persistent data, use volumes instead (covered in later lessons)
+
+## Rename and update containers
+```bash
+docker rename demo-nginx my-webserver
+docker ps
+docker update --memory 512m my-webserver
+docker inspect --format '{{.HostConfig.Memory}}' my-webserver
+```
+- Rename changes a container's name. Update modifies resource constraints like memory and CPU limits on running containers without restarting.
+
+- The container now appears with the new name. Memory limit is set to 512MB (shown in bytes in inspect output).
+
+1. Names must be unique across all containers
+2. Update is useful for adjusting resources without downtime
+3. Not all settings can be updated - some require recreating the container
+4. Common updates: --memory, --cpu-shares, --restart
+
+## View container differences
+```bash
+docker diff my-webserver
+```
+- Shows filesystem changes: A (added), D (deleted), C (changed). Useful for understanding what a container has modified.
+
+- You'll see files added or changed, including the custom.html you copied earlier.
+
+
+1. A = Added, C = Changed, D = Deleted
+2. Helps debug containers with unexpected behavior
+3. Shows why containers are larger than their images
+4. Use this before committing a container to an image
+
+## Attach to a running container
+```bash
+docker run -d --name test-ubuntu ubuntu bash -c 'while true; do date; sleep 2; done'
+docker attach test-ubuntu
+```
+- Attach connects your terminal to the container's main process. Press Ctrl+C to detach (this will stop the container unless you use Ctrl+P, Ctrl+Q).
+
+- You'll see date output every 2 seconds. Use Ctrl+P then Ctrl+Q to detach without stopping, or Ctrl+C to stop the container.
+
+1. Attach is different from exec - it connects to PID 1
+2. Use Ctrl+P, Ctrl+Q to detach without stopping
+3. Exec is usually better for interactive work
+4. Attach is useful for seeing real-time output
+
+## Container cleanup strategies
+```bash
+docker stop my-webserver test-ubuntu
+docker rm my-webserver test-ubuntu
+docker ps -a
+docker container prune
+docker ps -a
+```
+- Stop containers before removing them, or use 'docker rm -f' to force remove. Prune removes all stopped containers at once - useful for bulk cleanup.
+
+- Containers are removed from the system. Prune asks for confirmation and shows how much space was reclaimed.
+
+1. Use 'docker rm -f $(docker ps -aq)' to remove all containers (careful!)
+2. Add --rm flag when running containers for automatic cleanup
+3. Prune regularly to avoid accumulating stopped containers
+4. Remove containers before removing their images
+
+
