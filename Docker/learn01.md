@@ -332,3 +332,38 @@ docker ps
 
 ## Execute commands in running containers
 
+**Run commands inside a live container without stopping it.**
+
+```bash
+docker exec demo-nginx ls /usr/share/nginx/html
+docker exec demo-nginx cat /etc/nginx/nginx.conf
+docker exec -it demo-nginx bash
+```
+
+- `docker exec` runs a new process inside a running container. The `-it` flags give you an interactive terminal. Type 'exit' to leave without stopping the container.
+
+- You'll see directory contents, config file content, and then get an interactive shell inside the running container.
+
+1. Exec is perfect for debugging running containers
+2. The container must be running to use exec
+3. Common commands: bash, sh, cat, ls, ps
+4. Type 'exit' to leave the shell - the container keeps running
+
+## View container logs with filters
+
+```bash
+docker logs demo-nginx
+docker logs --tail 20 demo-nginx
+docker logs --since 5m demo-nginx
+docker logs -f demo-nginx
+```
+
+- Logs show everything written to stdout/stderr. Use --tail to limit lines, --since for time range, and -f to follow in real-time. Press Ctrl+C to stop following.
+
+- You'll see nginx access and error logs. The -f option streams new log entries as they appear.
+
+1. Timestamps help correlate logs with events: --timestamps
+2. Combine options: docker logs --tail 50 --since 1h container
+3. Logs persist even after container stops
+4. Use grep to filter: docker logs demo-nginx | grep error
+
