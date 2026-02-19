@@ -312,4 +312,23 @@ docker ps
 2. Restart is useful for applying configuration changes
 3. The container retains its IP address and volumes after restart
 
+## Pause and unpause containers
+
+**Temporarily freeze a container's processes without stopping it.**
+
+```bash
+docker pause demo-nginx
+docker ps
+docker unpause demo-nginx
+docker ps
+```
+- Pausing freezes all processes in the container using cgroups. The container remains in memory but consumes no CPU. Useful for temporarily halting resource-intensive containers.
+
+- When paused, the container status shows 'Paused'. After unpause, it returns to 'Up' status and resumes immediately where it left off.
+
+1. Paused containers still occupy memory
+2. Use pause for debugging or temporarily reducing system load
+3. Unlike stop/start, pause/unpause is instantaneous
+
+## Execute commands in running containers
 
