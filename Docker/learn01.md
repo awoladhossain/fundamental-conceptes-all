@@ -638,3 +638,129 @@ docker rm practice-redis
 
 - কোনো ডাটা সেট করতে: `docker exec practice-redis redis-cli SET mykey "Hello"`
 - সেই ডাটা দেখতে: `docker exec practice-redis redis-cli GET mykey`
+
+
+## Run a container from your custom image
+
+```bash
+docker run my-ubuntu:v1
+docker run my-ubuntu:v1 curl --version
+```
+
+- The first command runs the default CMD from the Dockerfile. The second overrides the CMD to verify curl is installed.
+
+- First command outputs 'Hello from my custom image!'. Second shows curl version information, confirming the package was installed during build.
+
+1. Any command after the image name overrides the CMD
+2. The image includes all changes from RUN instructions
+3. Containers from the same image are identical at start
+4. Changes inside containers don't affect the image
+
+## Understanding Dockerfile instructions
+```bash
+cat > Dockerfile << 'EOF'
+# Base image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy files
+COPY package.json .
+
+# Run commands
+RUN npm install
+
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Set environment variable
+ENV NODE_ENV=production
+
+# Default command
+CMD ["node", "app.js"]
+EOF
+```
+
+- ১. FROM node:18-alpine
+কাজ: এটি আপনার বেস ইমেজ। আপনি ডকারকে বলছেন, "আমার এই অ্যাপের জন্য এমন একটা কম্পিউটার (ইমেজ) দাও যার ভেতরে Node.js ভার্সন ১৮ অলরেডি ইনস্টল করা আছে।"
+
+কেন alpine? এটি খুব গুরুত্বপূর্ণ। আলপাইন হলো লিনাক্সের সবথেকে হালকা ভার্সন। সাধারণ উবুন্টু ইমেজ ২০০এমবি হলে, আলপাইন মাত্র ৫এমবি। ইন্টারভিউতে বলবেন— "ইমেজ সাইজ ছোট রাখার জন্য আমি আলপাইন ব্যবহার করেছি।"
+
+- ২. WORKDIR /app
+কাজ: কন্টেইনারের ভেতরে একটা ফোল্ডার তৈরি করে (/app) এবং তার ভেতরে ঢুকে যায়।
+
+সুবিধা: এরপর আপনি যা কপি করবেন বা রান করবেন, সব এই /app ফোল্ডারের ভেতরেই হবে। পিসিতে cd /app করার মতো।
+
+- ৩. COPY package.json .
+কাজ: আপনার পিসির package.json ফাইলটিকে কন্টেইনারের বর্তমান ফোল্ডারে (.) নিয়ে আসে।
+
+মাস্টার টিপস (Layer Caching): খেয়াল করুন, আপনি কিন্তু সব ফাইল একসাথে কপি করেননি, শুধু package.json করেছেন। কেন? কারণ ডকার প্রতিটি লাইনকে একটি Layer হিসেবে সেভ করে। যদি আপনার কোড চেঞ্জ হয় কিন্তু প্যাকেজ চেঞ্জ না হয়, তবে ডকার আগের লেয়ার থেকে npm install এর রেজাল্ট নিয়ে নেয়। এতে বিল্ড অনেক ফাস্ট হয়।
+
+- ৪. RUN npm install
+কাজ: এটি ইমেজ বানানোর সময় চলে। এটি ইন্টারনেটে গিয়ে আপনার প্রজেক্টের সব ডিপেন্ডেন্সি (Libraries) ডাউনলোড করে node_modules ফোল্ডার বানায়।
+
+- ৫. COPY . .
+কাজ: এবার আপনার পিসির বাকি সব কোড (app.js, ইমেজেস, সিএসএস) কন্টেইনারের ভেতরে কপি করে দেয়। এটি npm install এর নিচে রাখা হয় যেন কোড চেঞ্জ করলে বারবার সব ডাউনলোড করতে না হয়।
+
+- ৬. EXPOSE 3000
+কাজ: এটি শুধু একটি ডকুমেন্টেশন বা সিগন্যাল। এটি ডকারকে জানায় যে এই অ্যাপটি ৩০০০ পোর্টে কথা বলবে। (তবে এটি একা পোর্ট ওপেন করতে পারে না, রান করার সময় -p লাগে)।
+
+- ৭. ENV NODE_ENV=production
+কাজ: কন্টেইনারের ভেতরে একটি পরিবেশ চলক (Environment Variable) সেট করে। অনেক ফ্রেমওয়ার্ক এই ভ্যারিয়েবল দেখে বুঝে নেয় যে এখন অ্যাপটি প্রোডাকশনে চলছে, তখন তারা বাড়তি লগ বন্ধ করে স্পিড বাড়িয়ে দেয়।
+
+- ৮. CMD ["node", "app.js"]
+কাজ: এটি কন্টেইনার চালু হওয়ার সময় শেষ কমান্ড হিসেবে চলে। এটি আপনার সার্ভারকে স্টার্ট করে।
+
+মনে রাখবেন: RUN চলে ইমেজ বানানোর সময়, আর CMD চলে কন্টেইনার রান করার সময়।
+
+
+## Build arguments and customization
+```bash
+FROM node:20-alpine
+ARG NODE_ENV=development
+ARG PORT=3000
+
+WORKDIR /app
+COPY package.json .
+RUN npm install
+COPY . .
+
+EXPOSE ${PORT}
+ENV NODE_ENV=${NODE_ENV}}
+ENV PORT=${PORT}
+
+CMD [ "node", "app.js" ]
+```
+
+- ১. ARG বনাম ENV (আসল পার্থক্য)
+ARG (Build-time): এটি শুধু ইমেজ তৈরি (Build) করার সময় কাজে লাগে। আপনি যখন docker build করছেন, তখন বাইরে থেকে কোনো মান ভেতরে পাঠাতে এটি ব্যবহার করা হয়। ইমেজ তৈরি হয়ে গেলে এটার কাজ শেষ।
+
+ENV (Runtime): এটি কন্টেইনার চলার সময় কাজে লাগে। অ্যাপের ভেতরে কোড যখন রান করবে, তখন সে এই ভ্যালুগুলো দেখতে পাবে।
+
+- ২. আপনার Dockerfile-এ কী হচ্ছে?
+আপনি ডকারকে বলছেন: "ভাই, আমি তোমাকে দুইটা ফাঁকা বাক্স (ARG) দিচ্ছি (NODE_ENV এবং PORT)। আমি যখন বিল্ড করব, তখন বলে দেব এই বাক্সে কী থাকবে।"
+
+ARG NODE_ENV=development: এটি একটি ডিফল্ট মান। যদি আপনি বিল্ড করার সময় কিছু না বলেন, তবে সে development ধরে নেবে।
+
+ENV NODE_ENV=${NODE_ENV}: এটি জাদুকরী লাইন! এখানে আপনি ARG এর মানটিকে ENV-এ ট্রান্সফার করছেন। কারণ আপনার নোড অ্যাপ (app.js) শুধু ENV পড়তে পারে, ARG নয়।
+
+- ৩. আপনার বিল্ড কমান্ড দুটির পার্থক্য
+আপনি দুইবার বিল্ড করেছেন, ফলাফল হবে সম্পূর্ণ আলাদা:
+
+**প্রথম বিল্ড (Dev Version):**
+`docker build -t my-node-app:dev .`
+
+এখানে আপনি কোনো --build-arg দেননি।
+
+ফলাফল: এই ইমেজের ভেতর পোর্ট হবে 3000 আর এনভায়রনমেন্ট হবে development।
+
+`docker build -t my-node-app:prod --build-arg NODE_ENV=production --build-arg PORT=8080 .`
+
+- এখানে আপনি ডকারকে বলছেন, "এবার ডিফল্ট মানগুলো বাদ দাও। NODE_ENV ধরো production আর PORT ধরো 8080।"
+- ফলাফল: এই ইমেজটি যখন রান করবেন, অ্যাপটি 8080 পোর্টে চলবে।
+
+**আমি ARG ব্যবহার করে একই Dockerfile দিয়ে ডাইনামিক ইমেজ বানাতে পারি। এতে কোড ডুপ্লিকেট হয় না (DRY - Don't Repeat Yourself)**
