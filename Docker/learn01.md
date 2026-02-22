@@ -613,3 +613,28 @@ sudo ls /var/lib/docker/volumes/my_sd_card/_data
 - উপায় ১ (Named Volume): ডকারকে বললেন, "তুমি তোমার নিজের মতো একটা স্টোরেজ বক্স বানাও আর সেখানে আমার ফাইল রাখো।" (এটা কোথায় থাকে সেটা ডকার ভালো জানে, আপনি সহজে খুঁজে পাবেন না)।
 
 - উপায় ২ (Bind Mount): আপনি ডকারকে বললেন, "বেশি পণ্ডিতি করো না, আমার পিসির এই learning ফোল্ডারটা ব্যবহার করো।" (এটা আপনার চোখের সামনে থাকে, আপনি VS Code দিয়ে ফাইল দেখতে ও এডিট করতে পারেন)।
+
+## Practice: Complete container lifecycle
+```bash
+docker run -d --name practice-redis redis:alpine
+docker ps
+docker exec practice-redis redis-cli PING
+docker logs practice-redis
+docker stats --no-stream practice-redis
+docker pause practice-redis
+docker unpause practice-redis
+docker restart practice-redis
+docker stop practice-redis
+docker rm practice-redis
+```
+- This workflow demonstrates the complete container lifecycle: create, verify, execute commands, check logs, monitor resources, pause/unpause, restart, and finally cleanup.
+
+- Each command succeeds. The redis-cli PING returns 'PONG'. Stats show resource usage. The container is cleanly removed at the end.
+
+1. This is a typical workflow for managing containers in development
+2. Always verify containers are running before executing commands
+3. Monitor resource usage to catch problems early
+4. Clean up containers when done to avoid clutter
+
+- কোনো ডাটা সেট করতে: `docker exec practice-redis redis-cli SET mykey "Hello"`
+- সেই ডাটা দেখতে: `docker exec practice-redis redis-cli GET mykey`
