@@ -1,5 +1,3 @@
-remote_theme: pmarsceill/just-the-docs
+remote_theme: pages-themes/slate
 title: Fundamental Concepts All
-description: An open-source collection of my learning resources.
-
-color_scheme: dark
+description: Learning resources and notes.
