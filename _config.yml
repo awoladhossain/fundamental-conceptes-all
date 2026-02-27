@@ -2,7 +2,4 @@ remote_theme: pmarsceill/just-the-docs
 title: Fundamental Concepts All
 description: An open-source collection of my learning resources.
 
-
-aux_links:
-  "GitHub Repository":
-    - "https://github.com/awoladhossain/fundamental-conceptes-all"
+color_scheme: dark
