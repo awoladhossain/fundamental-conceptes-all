@@ -21,6 +21,22 @@ This repository is built with one goal in mind:
 
 ## 📂 Topics Covered
 
+### 🏗️ Cloud & DevOps
+- [AWS (Cloud Services)](./AWS/)
+- [Docker (Containerization)](./Docker/)
+- [Linux (OS & Commands)](./Linux/)
+- [Networking Basics](./Networking/)
+
+### 🧠 Computer Science Fundamentals
+- [Data Structures & Algorithms](./Concepts/)
+- [Database Design & SQL](./Database/)
+- [Operating Systems (OS)](./OS/)
+- [Object Oriented Programming (OOP)](./OOP/)
+
+### 🏗️ Advanced Concepts
+- [System Design](./System%20Design/)
+- [Websockets](./websockets/)
+
 ### 🧠 Computer Science Fundamentals
 - Data Structures & Algorithms (Arrays, Linked Lists, Trees, Graphs, Sorting, Searching, DP)
 - Database Design & SQL (Normalization, Indexing, Joins, Transactions)
