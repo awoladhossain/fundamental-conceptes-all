@@ -1,3 +1,3 @@
-remote_theme: pages-themes/slate
+remote_theme: mmistakes/minimal-mistakes
+minimal_mistakes_skin: "dark" 
 title: Fundamental Concepts All
-description: Learning resources and notes.
