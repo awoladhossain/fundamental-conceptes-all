@@ -256,3 +256,106 @@ cat from-container.txt
 ### Step 5: Live Code Reload দেখো (Real Use Case)
 এটাই Bind Mount এর আসল power। একটা Node.js example:
 
+```bash
+mkdir ~/node-live
+cd ~/node-live
+``
+
+- index.js file তৈরি করো:
+
+```bash
+// index.js
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  res.end('Version 1 - পরিবর্তন দেখো!\n');
+});
+
+server.listen(3000, () => console.log('Running on 3000'));
+```
+
+- Container চালাও:
+
+```bash
+docker run -d \
+  --name liveapp \
+  -p 3000:3000 \
+  -v $(pwd):/app \
+  -w /app \
+  node:18-alpine \
+  node index.js
+```
+- `-w /app` মানে `working directory /app সেট করো।
+
+```bash
+Browser এ বা terminal এ দেখো:
+```
+
+```bash
+curl localhost:3000
+# Version 1 - পরিবর্তন দেখো!
+```
+- এখন index.js এ change করো (container বন্ধ না করে):
+
+```bash
+res.end('Version 2 - আমি বদলে গেছি!\n');
+```
+- Container restart করো (nodemon ছাড়া manually):
+
+```bash
+docker restart liveapp
+curl localhost:3000
+# Version 2 - আমি বদলে গেছি! ✅
+```
+
+---
+
+# Named Volume vs Bind Mount - পার্থক্য
+```
+Named Volume:
+✅ Production এ ব্যবহার করো
+✅ Database data রাখতে (MySQL, MongoDB, PostgreSQL)
+✅ Docker নিজে manage করে, safe
+❌ সরাসরি files edit করা কঠিন
+
+Bind Mount:
+✅ Development এ ব্যবহার করো
+✅ Code live reload করতে
+✅ Host এর files সরাসরে access
+❌ Production এ risky (host এর যেকোনো file access হতে পারে)
+```
+## সব Volume Commands এক জায়গায়
+
+```bash
+# Volume তৈরি
+docker volume create myvolume
+
+# সব volumes দেখো
+docker volume ls
+
+# Volume এর details
+docker volume inspect myvolume
+
+# Volume delete
+docker volume rm myvolume
+
+# সব unused volumes delete
+docker volume prune
+
+# Named volume দিয়ে run
+docker run -v myvolume:/app/data myimage
+
+# Bind mount দিয়ে run
+docker run -v /host/path:/container/path myimage
+docker run -v $(pwd):/app myimage          # current folder
+```
+
+---
+
+# Quick Summary
+```
+Data রাখতে হবে permanently?  → Named Volume ব্যবহার করো
+Development এ code sync?      → Bind Mount ব্যবহার করো
+Container delete = Data delete → এটা avoid করতেই Volume
+````
+
