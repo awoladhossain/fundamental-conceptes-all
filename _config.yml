@@ -1,3 +1,2 @@
-remote_theme: cotes2020/jekyll-theme-chirpy
-
-title: Fundamental Concepts All
+remote_theme: "mmistakes/minimal-mistakes"
+title: "Fundamental Concepts All"
