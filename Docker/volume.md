@@ -203,3 +203,56 @@ Development এর সময়! Code change করলে সাথে সাথ
 
 
 ## Step by Step Practice
+
+**Step 1: একটা Project Folder তৈরি করো**
+
+```bash
+mkdir ~/docker-practice
+cd ~/docker-practice
+```
+
+**Step 2: একটা Simple File তৈরি করো**
+```bash
+echo "Hello from host machine!" > message.txt
+ls
+# message.txt দেখাবে
+```
+
+**Step 3: Bind Mount দিয়ে Container চালাও**
+```bash
+# Format: -v /host/path:/container/path
+docker run -it --name bindtest -v $(pwd):/myapp ubuntu bash
+```
+
+- `$(pwd)` মানে current directory (যেখানে তুমি এখন আছো)
+
+**Container এর ভেতরে:**
+
+```bash
+cd /myapp
+ls
+# message.txt দেখাবে ✅
+
+cat message.txt
+# Hello from host machine!
+```
+
+**Step 4: Container থেকে File তৈরি করো**
+Container এর ভেতরে থেকে:
+```bash
+echo "Container থেকে লেখা" > from-container.txt
+exit
+```
+এখন host machine এ দেখো:
+
+```bash
+ls ~/docker-practice
+# message.txt এবং from-container.txt দুটোই আছে ✅
+cat from-container.txt
+# Container থেকে লেখা
+```
+- দুইদিক থেকেই কাজ করে!
+
+### Step 5: Live Code Reload দেখো (Real Use Case)
+এটাই Bind Mount এর আসল power। একটা Node.js example:
+
