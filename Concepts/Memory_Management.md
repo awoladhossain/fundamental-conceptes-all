@@ -155,3 +155,56 @@ ___
                 |      Code / Text Segment (Read-only)  | <--- তোমার আসল কোড (Binary instructions)
     Low Address +---------------------------------------+
 
+```cpp
+int global_var = 50;            // Data Segment (Initialized)
+int uninitialized_var;          // BSS Segment
+
+void myFunc() {
+    int local_var = 10;         // Stack Memory
+    int* h_ptr = new int(20);   // h_ptr থাকে Stack-এ, কিন্তু 20 থাকে Heap-এ
+}
+```
+
+---
+
+## 📍 মূল কনসেপ্ট (The Core Logic)
+
+সহজ কথায়: **Stack** হচ্ছে মেমোরির একটি ছোট কিন্তু সুপার ফাস্ট ড্রয়ার, আর **Heap** হচ্ছে একটি বিশাল গুদাম ঘর।
+
+### ১. Stack Memory (রেফারেন্স থাকে)
+*   এখানে থাকে **Primitive Values** (যেমন: `int`, `boolean`) এবং বড় ডাটার **Reference** (ঠিকানা)।
+*   এটি স্ট্যাটিক মেমোরি অ্যালোকেশন ব্যবহার করে।
+*   ফাংশন এক্সিকিউশন শেষ হওয়ার সাথে সাথে এর ডাটা অটোমেটিক ডিলিট হয়ে যায়।
+
+### ২. Heap Memory (আসল ভ্যালু থাকে)
+*   এখানে থাকে **Objects, Arrays, Functions** এবং বড় ডাটা সেট।
+*   এটি ডাইনামিক মেমোরি অ্যালোকেশন ব্যবহার করে।
+*   এখানকার ডাটা ক্লিন করার জন্য **Garbage Collector (GC)** এর প্রয়োজন হয়।
+
+---
+
+```cpp
+#include <iostream>
+using namespace std;
+int main() {
+
+    int x=5;
+    int* p= &x;
+    cout<< p;
+    cout<< *p;
+
+    return 0;
+}
+```
+
+Variable    Address      Value
+ +---------+-----------+-----------+
+ |    x    |   0x101   |     5     |  <-- x এর নিজের মান ৫
+ +---------+-----------+-----------+
+ |    p    |   0x202   |   0x101   |  <-- p এর ভেতর x এর ঠিকানা (0x101)
+ +---------+-----------+-----------+
+
+- &x	Address of	x ভেরিয়েবলটি মেমোরির কোন ঠিকানায় আছে?
+- int* p	Pointer Declaration	p নামের একটা পয়েন্টার বানাও যা ঠিকানা সেভ করবে।
+- p	Pointer Value	p এর ভেতর জমানো ঠিকানাটা (Address) দেখাও।
+- *p	Dereferencing	এই ঠিকানায় যে ভ্যালুটা লুকুয়ে আছে তা বের করে আনো।
