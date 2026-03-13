@@ -357,5 +357,41 @@ docker run -v $(pwd):/app myimage          # current folder
 Data রাখতে হবে permanently?  → Named Volume ব্যবহার করো
 Development এ code sync?      → Bind Mount ব্যবহার করো
 Container delete = Data delete → এটা avoid করতেই Volume
-````
+```
+___
+
+## Practice
+
+```js
+const express = require('express');
+const fs = require('fs');
+const app = express();
+
+app.use(express.json());
+
+const filePath = './data/hello.txt';
+
+app.get('/', (req, res) => {
+    const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : "ফাইল এখনো খালি!";
+    res.send(`<h1>Data from Volume:</h1><p>${content}</p>`);
+});
+
+app.post('/save', (req, res) => {
+    const text = req.body.text;
+    fs.appendFileSync(filePath, text + "\n");
+    res.send("Data saved to volume!");
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
+```
+
+```Dockerfile
+FROM node:18
+WORKDIR /app
+RUN npm install express
+COPY . .
+RUN mkdir data
+EXPOSE 3000
+CMD ["node", "server.js"]
+```
 
