@@ -180,7 +180,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ---
 
 <p align="center">
-  <b>Happy Learning & Happy Coding! 🚀</b>
+  <b>Happy Learning & Happy Coding!</b>
   <br><br>
   <i>Last Updated: March 2026</i>
 </p>
