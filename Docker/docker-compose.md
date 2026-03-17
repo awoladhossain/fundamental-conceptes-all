@@ -260,3 +260,232 @@ services:
 
 ## ✅ ভালো docker-compose.yml
 
+```bash
+# version obsolete, না লিখলেই ভালো
+# কিন্তু লিখলেও কাজ করে, warning দেখায় শুধু
+
+services:
+
+  # ── Database ────────────────────────────────
+  mongodb:
+    image: mongo:6                    # সবসময় version দাও
+    container_name: todo-mongodb
+
+    # Secret কখনো এখানে লিখবে না
+    # .env file থেকে নাও
+    env_file:
+      - .env
+
+    volumes:
+      - mongodata:/data/db            # data persist করার জন্য
+
+    networks:
+      - todo-net
+
+    restart: unless-stopped           # manually বন্ধ না হলে সবসময় চলবে
+
+  # ── Backend ─────────────────────────────────
+  backend:
+    build:
+      context: ./backend              # কোন folder
+      dockerfile: Dockerfile          # কোন Dockerfile (নাম আলাদা হলে)
+
+    container_name: todo-backend
+
+    ports:
+      - "5000:5000"
+
+    # Secrets .env থেকে নাও
+    env_file:
+      - .env
+
+    # Non-secret config এখানে দিতে পারো
+    environment:
+      - NODE_ENV=development
+
+    volumes:
+      - ./backend:/app                # bind mount (dev এ)
+      - /app/node_modules             # node_modules রক্ষা করো
+
+    depends_on:
+      - mongodb
+
+    networks:
+      - todo-net
+
+    restart: on-failure
+
+  # ── Frontend ────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: todo-frontend
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+    depends_on:
+      - backend
+
+    networks:
+      - todo-net
+
+    restart: on-failure
+
+# ── Volumes ─────────────────────────────────────
+volumes:
+  mongodata:                          # Docker manage করবে
+
+# ── Networks ────────────────────────────────────
+networks:
+  todo-net:
+    driver: bridge                    # default bridge, explicitly লিখলে clear হয়
+
+```
+
+## .env file — Secret আলাদা রাখো
+
+```bash
+# .env
+MONGO_INITDB_ROOT_USERNAME=admin
+MONGO_INITDB_ROOT_PASSWORD=supersecret123
+MONGO_URL=mongodb://admin:supersecret123@mongodb:27017/tododb
+PORT=5000
+NODE_ENV=development
+```
+
+
+```bash
+# .gitignore — এটা অবশ্যই করবে
+.env
+node_modules
+```
+```
+.env → local এ থাকবে
+.gitignore → GitHub এ যাবে না
+কেউ তোমার repo দেখলে password দেখবে না ✅
+```
+
+---
+
+### docker-compose লেখার Rules মনে রাখো
+```
+Rule 1: Secret কখনো compose file এ লিখবে না
+  ❌ environment:
+       - DB_PASSWORD=secret123
+  ✅ env_file:
+       - .env
+
+Rule 2: .env কখনো GitHub এ push করবে না
+  .gitignore এ .env লিখবেই
+
+Rule 3: সবসময় custom network দাও
+  Default network এ DNS কাজ করে না
+  Custom network এ service name দিয়ে connect হয়
+
+Rule 4: Database এ সবসময় volume দাও
+  Volume ছাড়া container delete = data delete
+
+Rule 5: Image এ সবসময় version tag দাও
+  ❌ image: mongo
+  ✅ image: mongo:6
+
+Rule 6: depends_on মানে "ready" না, "started"
+  Database connect এ retry logic রাখো code এ
+
+Rule 7: Indentation সবসময় 2 space
+  Tab দিলে error আসে YAML এ
+```
+
+---
+
+## Part 3: তোমার Error গুলোর ব্যাখ্যা এবং ভবিষ্যতে কী করবে
+
+---
+
+### Error 1: External Drive Bind Mount
+```
+The path /media/awolad/MEDIA1.1/todo-app/backend
+is not shared from the host
+```
+
+**কারণ:**
+Docker bind mount শুধু নির্দিষ্ট কিছু folder access করতে পারে। Linux এ default হলো `/home`। External drive `/media/...` এ Docker এর permission নেই।
+
+**ভবিষ্যতে মনে রাখবে:**
+```
+Docker project সবসময় home directory তে রাখো
+✅ ~/myproject
+✅ /home/awolad/myproject
+❌ /media/...
+❌ /mnt/...
+❌ /tmp/...
+```
+
+---
+
+### Error 2: Node Version Mismatch
+```
+You are using Node.js 18.20.8.
+Vite requires Node.js version 20.19+ or 22.12+
+TypeError: crypto.hash is not a function
+```
+
+**কারণ:**
+নতুন Vite এর কিছু feature Node 20 এ introduce হয়েছে। Node 18 এ `crypto.hash` function নেই।
+
+**ভবিষ্যতে মনে রাখবে:**
+```
+নতুন package install করার আগে Node version requirement দেখো
+package এর docs বা npmjs.com এ লেখা থাকে
+
+Dockerfile এ সবসময় নির্দিষ্ট version দাও:
+✅ FROM node:20-alpine   (Vite এর জন্য)
+✅ FROM node:18-alpine   (পুরানো projects এর জন্য)
+❌ FROM node:latest      (আজ কাজ করে, কাল নাও করতে পারে)
+```
+
+---
+
+### Error 3: Docker Cache
+```
+CACHED [forntend 4/5] RUN npm install
+← Dockerfile change করলেও পুরানো cache use করছে
+```
+কারণ:
+Docker প্রতিটা layer cache করে রাখে। Image delete না করলে বা --no-cache না দিলে পুরানো cache use করে। তাই Dockerfile change করলেও reflect হয় না।
+
+## ভবিষ্যতে মনে রাখবে:
+```bash
+# Dockerfile change করলে এটা করো:
+docker compose down
+docker rmi image_name          # পুরানো image delete
+docker compose up --build      # rebuild
+
+# অথবা নিশ্চিত হতে:
+docker compose build --no-cache    # cache ছাড়া build
+docker compose up
+```
+
+Cache কখন problem হয়:
+```
+✅ Cache ভালো → Code change, npm install skip → Fast build
+❌ Cache সমস্যা → Dockerfile change করলে reflect হয় না
+```
+
+---
+
+### Error 4: `version` Obsolete Warning
+```
+the attribute `version` is obsolete,
+it will be ignored, please remove it
+```
+কারণ:
+নতুন Docker Compose এ version field আর দরকার নেই। Automatically detect করে।
+
