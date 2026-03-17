@@ -120,3 +120,143 @@ CMD ["npm", "run", "dev"]
 
 ### ✅ Multi-stage Dockerfile — Production React
 Production এ Vite dev server চালানো উচিত না। Build করে nginx দিয়ে serve করতে হয়।
+
+```bash
+# ── Stage 1: Build ─────────────────────────────
+# এই stage এ node থাকবে, শুধু build করার জন্য
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+
+# React app build করো
+RUN npm run build
+# /app/dist এ static files তৈরি হবে
+
+# ── Stage 2: Serve ─────────────────────────────
+# এই stage এ node নেই, শুধু nginx
+# Final image অনেক ছোট হবে (~25MB vs ~400MB)
+FROM nginx:alpine
+
+# Build হওয়া files nginx এর folder এ copy করো
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+```
+Stage 1 (builder): node:20-alpine + সব dependencies = ~400MB
+Stage 2 (final):   nginx:alpine + শুধু dist files = ~25MB
+
+Final image এ node থাকে না! শুধু built files থাকে।
+```
+
+---
+
+### .dockerignore — অবশ্যই লিখবে
+
+`.dockerignore` ছাড়া `COPY . .` করলে অপ্রয়োজনীয় সব কিছু image এ ঢুকবে।
+```
+# backend/.dockerignore
+node_modules        ← host এর modules, container এ দরকার নেই
+.env                ← secret, image এ রাখা বিপজ্জনক
+.git                ← git history দরকার নেই
+*.log               ← log files দরকার নেই
+.DS_Store           ← Mac এর system file
+README.md           ← documentation দরকার নেই
+```
+```
+# frontend/.dockerignore
+node_modules
+dist                ← আগের build, container এ দরকার নেই
+.env
+.git
+*.log
+```
+
+`.dockerignore` থাকলে:
+```
+Build fast হয়      ← কম files transfer হয়
+Image ছোট হয়       ← অপ্রয়োজনীয় files নেই
+Secure হয়          ← .env, secrets image এ যায় না
+```
+
+---
+
+### Dockerfile লেখার Rules মনে রাখো
+```
+Rule 1: সবসময় নির্দিষ্ট version দাও
+  ❌ FROM node:latest    → কাল update হলে সব ভাঙতে পারে
+  ✅ FROM node:20-alpine → সবসময় same
+
+Rule 2: alpine use করো যেখানে পারো
+  ❌ FROM node:20        → ~1GB
+  ✅ FROM node:20-alpine → ~150MB
+
+Rule 3: package.json আগে copy করো
+  ❌ COPY . .
+     RUN npm install    → code change = npm install আবার
+
+  ✅ COPY package*.json ./
+     RUN npm install
+     COPY . .           → code change = npm install skip ✅
+
+Rule 4: .dockerignore অবশ্যই লিখবে
+  node_modules, .env, .git সবসময় ignore
+
+Rule 5: CMD এ array format
+  ❌ CMD "node index.js"
+  ✅ CMD ["node", "index.js"]
+
+Rule 6: Production এ npm ci
+  ❌ RUN npm install     → package-lock.json ignore করতে পারে
+  ✅ RUN npm ci          → exact versions install করে
+```
+
+## Part 2: ভালো docker-compose.yml কীভাবে লিখবে
+
+```bash
+services:
+  service_name:
+    # ১. Image source (image বা build)
+    # ২. container_name
+    # ৩. ports
+    # ৪. environment / env_file
+    # ৫. volumes
+    # ৖. depends_on
+    # ৭. networks
+    # ৮. restart
+
+volumes:
+
+networks:
+```
+
+## ❌ খারাপ docker-compose.yml
+
+```bash
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_PASSWORD=supersecret123
+    restart: always
+```
+
+**সমস্যাগুলো:**
+```
+১. Password সরাসরি লেখা → GitHub এ push হলে সবাই দেখবে
+২. network নেই → default network use করবে (DNS কাজ করবে না)
+৩. volume নেই → data হারাবে
+৪. depends_on নেই → DB ready হওয়ার আগে app connect করবে
+৫. healthcheck নেই → container চলছে মানে app ready না
+```
+
+## ✅ ভালো docker-compose.yml
+
