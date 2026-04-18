@@ -1,7 +1,6 @@
 # Basic k8s
 
 Week 1: Foundations & Pods (The Basics)
-এই সপ্তাহে আপনার লক্ষ্য হলো কুবারনেটিসের বেসিক ইউনিটগুলো বোঝা।
 
 Day 1: Architecture Deep Dive (Control Plane vs Worker Nodes) — আজ যা করেছেন।
 
